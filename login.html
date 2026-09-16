@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Entrar</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔑</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .login-card{
+    width:100%;max-width:380px;
+    background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    box-shadow:var(--shadow);
+    padding:32px 28px;
+    display:flex;flex-direction:column;gap:18px;
+  }
+  .login-card .brand{display:flex;justify-content:center;margin-bottom:4px;}
+  .login-card .brand img{height:24px;}
+  .login-card h1{font-size:20px;font-weight:800;margin:0;text-align:center;}
+  .login-card p.sub{font-size:13px;color:var(--ink-soft);margin:0;text-align:center;}
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field label{font-size:12.5px;font-weight:600;color:var(--ink-soft);}
+  .field input{
+    font-family:'Red Hat Display',sans-serif;font-size:14px;color:var(--ink);
+    border:1px solid var(--border);border-radius:10px;padding:11px 13px;
+    background:var(--bg);
+  }
+  .field input:focus-visible{outline:2px solid var(--ink);outline-offset:1px;}
+  .login-btn{
+    font-family:'Red Hat Display',sans-serif;font-weight:700;font-size:14.5px;
+    background:var(--ink);color:var(--accent);
+    border:none;border-radius:10px;padding:13px;cursor:pointer;
+    margin-top:4px;
+  }
+  .login-btn[disabled]{opacity:.6;cursor:default;}
+  .error-msg{
+    font-size:13px;color:#8A1F2B;background:#FBEAEA;border:1px solid #F0C6C6;
+    border-radius:8px;padding:10px 12px;display:none;
+  }
+  .error-msg.show{display:block;}
+  .login-foot{font-size:12px;color:var(--ink-faint);text-align:center;margin-top:2px;}
+</style>
+</head>
+<body>
+<form class="login-card" id="loginForm" novalidate>
+  <div class="brand"><img src="assets/nexus-logo.png" alt="Nexus Digital"></div>
+  <div>
+    <h1>Área de Membros</h1>
+    <p class="sub">Entre com o e-mail e senha que a Nexus cadastrou pra você.</p>
+  </div>
+
+  <div class="error-msg" id="errorMsg" role="alert"></div>
+
+  <div class="field">
+    <label for="email">E-mail</label>
+    <input id="email" name="email" type="email" autocomplete="username" required>
+  </div>
+  <div class="field">
+    <label for="password">Senha</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" required>
+  </div>
+
+  <button class="login-btn" id="loginBtn" type="submit">Entrar</button>
+  <p class="login-foot">Esqueceu a senha ou não tem acesso ainda? Fala com a Nexus.</p>
+</form>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth, signInWithEmailAndPassword, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBhlUoiffq5xpbfT5ghxfASJCdry6fllSE",
+  authDomain: "nexus-membros.firebaseapp.com",
+  projectId: "nexus-membros",
+  storageBucket: "nexus-membros.firebasestorage.app",
+  messagingSenderId: "641030538028",
+  appId: "1:641030538028:web:4e673e9e5925a27f80a289",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const params = new URLSearchParams(location.search);
+const redirectTo = params.get('next') || 'index.html';
+
+onAuthStateChanged(auth, (user) => {
+  if (user) location.href = redirectTo;
+});
+
+const ERROR_MESSAGES = {
+  'auth/invalid-email': 'E-mail inválido.',
+  'auth/user-disabled': 'Esse acesso foi desativado. Fala com a Nexus.',
+  'auth/user-not-found': 'E-mail ou senha incorretos.',
+  'auth/wrong-password': 'E-mail ou senha incorretos.',
+  'auth/invalid-credential': 'E-mail ou senha incorretos.',
+  'auth/too-many-requests': 'Muitas tentativas. Espera um pouco e tenta de novo.',
+  'auth/network-request-failed': 'Sem conexão. Confere sua internet.',
+};
+
+const form = document.getElementById('loginForm');
+const errorMsg = document.getElementById('errorMsg');
+const loginBtn = document.getElementById('loginBtn');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  errorMsg.classList.remove('show');
+  loginBtn.disabled = true;
+  loginBtn.textContent = 'Entrando…';
+
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (err) {
+    errorMsg.textContent = ERROR_MESSAGES[err.code] || 'Não deu pra entrar. Tenta de novo.';
+    errorMsg.classList.add('show');
+    loginBtn.disabled = false;
+    loginBtn.textContent = 'Entrar';
+  }
+});
+</script>
+</body>
+</html>

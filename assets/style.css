@@ -48,6 +48,19 @@ a{color:inherit;}
 /* ---------- TOPBAR ---------- */
 .topbar{border-bottom:1px solid var(--border);}
 .topbar-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;gap:16px;flex-wrap:wrap;}
+.logout-btn{
+  font-family:'Red Hat Display',sans-serif;font-weight:600;font-size:12.5px;
+  color:var(--ink-soft);background:none;border:1px solid var(--border);border-radius:8px;
+  padding:7px 14px;cursor:pointer;
+}
+.logout-btn:hover{color:var(--ink);border-color:var(--ink);}
+
+.loading-screen{
+  min-height:70vh;display:flex;align-items:center;justify-content:center;
+}
+.loading-inner{display:flex;flex-direction:column;align-items:center;gap:14px;}
+.loading-logo img{height:22px;opacity:.6;}
+.loading-inner p{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-faint);margin:0;}
 .topbar-left{display:flex;align-items:center;gap:12px;}
 .brand img{display:block;height:20px;width:auto;}
 .area-label{

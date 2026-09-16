@@ -1,0 +1,3 @@
+_migration/
+node_modules/
+*.firebase-adminsdk-*.json

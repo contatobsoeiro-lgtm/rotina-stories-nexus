@@ -25,10 +25,18 @@
       <span class="module-link disabled">Script de Vendas<span class="soon">em breve</span></span>
       <span class="module-link disabled">Linha Editorial<span class="soon">em breve</span></span>
     </nav>
+    <button class="logout-btn" data-action="logout" title="Sair">Sair</button>
   </div>
 </header>
 
-<main>
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-inner">
+    <div class="loading-logo"><img src="assets/nexus-logo.png" alt=""></div>
+    <p>Carregando…</p>
+  </div>
+</div>
+
+<main id="mainContent" hidden>
 <div class="wrap hero">
   <div class="page-header-row">
     <div>
@@ -94,27 +102,7 @@
 
     <div class="template-block">
       <div class="tb-label">Copie e cole nas instruções do Projeto</div>
-      <pre id="ctxTemplate">Aja como a minha social media estrategista, especialista em Instagram de nutricionistas. O seu trabalho não é só escrever: é pensar a estratégia antes. Antes de qualquer entrega, confira se você sabe para quem é o conteúdo, qual dor ele toca, qual o objetivo dele e em que dia da minha linha editorial ele entra. Se faltar alguma dessas informações, me faça até 3 perguntas, uma de cada vez, antes de escrever.
-
-Quem eu sou: [seu nome], nutricionista, [presencial / online / os dois]. [1-2 frases sobre sua rotina: família, horário de atendimento, o que mais faz no dia].
-
-O meu público: [idade, objetivo principal, perfil de rotina, ex: mulheres de 25 a 40 anos que querem emagrecer, rotina apertada entre trabalho e família].
-
-As dores delas: [liste 4 a 6 dores reais, nas palavras que as pacientes usam].
-
-O que elas querem: [liste 2 a 3 desejos reais, sem jargão técnico].
-
-As objeções mais comuns: [liste as frases que elas dizem antes de fechar, tipo "já tentei de tudo", "não tenho tempo", "tá caro" etc].
-
-A minha linha editorial: [descreva o que você posta em cada dia da semana, ex: segunda conteúdo de método com convite, terça educativo, quarta prova social, quinta lista numerada, sexta conexão sem convite, fim de semana leve].
-
-O que já funcionou no meu perfil: [1 a 2 exemplos, com o número de visualizações]. O que não funcionou: [1 exemplo, com número]. A minha média é [número].
-
-O meu método: [2 a 3 frases sobre como você atende: plano alimentar, check-in, suporte, diferencial].
-
-O meu jeito de falar: [tom: direto, acolhedor, bem-humorado, técnico]. Regras para tudo que você escrever: português do Brasil, tom de conversa, uma ideia por conteúdo, pouco emoji e nenhum travessão, que denuncia texto de IA. Nunca invente informação sobre mim ou sobre as minhas pacientes: pergunte.
-
-Quando algo mudar, como um número novo do seu perfil, um plano novo ou um formato que começou a funcionar, atualize aqui. Estrategista trabalha com o cenário de hoje, não com o do mês passado.</pre>
+      <pre id="ctxTemplate"></pre>
       <button class="copy-btn" data-copy-target="ctxTemplate" data-label="Copiar contexto fixo">Copiar contexto fixo</button>
     </div>
   </div>
@@ -129,11 +117,7 @@ Quando algo mudar, como um número novo do seu perfil, um plano novo ou um forma
 
     <div class="template-block">
       <div class="tb-label">Prompt 0 · a entrevista</div>
-      <pre id="p0">Antes de a gente começar a criar conteúdo, quero que você faça comigo o seu diagnóstico de estrategista. Leia o contexto que eu te passei e me entreviste para completar o que falta sobre o meu público, as dores e os desejos delas, as objeções, a minha linha editorial e os meus diferenciais.
-
-Regras da entrevista: uma pergunta por vez, espere a minha resposta antes da próxima e não passe de 12 perguntas. Priorize o que só eu sei: as frases que as pacientes mais repetem na primeira consulta, o que elas já tentaram antes de chegar em mim, o que mais me pedem no suporte e por que quem fecha comigo fecha.
-
-No final, me entregue um briefing de estrategista em tópicos curtos: público, dores, desejos, objeções, linha editorial, diferenciais e 5 frases reais das minhas pacientes para usar como abertura de conteúdo.</pre>
+      <pre id="p0"></pre>
       <button class="copy-btn" data-copy-target="p0" data-label="Copiar prompt 0">Copiar prompt 0</button>
     </div>
     <p style="font-size:13px;color:var(--ink-faint);margin-top:16px;max-width:680px;">Quando ela entregar o briefing: leia, corrija o que estiver errado e cole nas instruções do Projeto, logo abaixo do contexto fixo. Refaça a entrevista a cada ciclo, ou quando mudar algo grande no seu público ou na sua oferta.</p>
@@ -164,36 +148,9 @@ No final, me entregue um briefing de estrategista em tópicos curtos: público, 
 
 <div class="wrap"><footer>Nexus Digital · Prompts de Conteúdo, a IA como social media estrategista.</footer></div>
 
-<script>
-const FEED_PROMPTS = [
-  {n:1, title:'As ideias da semana', when:'Etapa 4 do planejamento, depois da curadoria, dos números e das dúvidas', text:`Monte as ideias de conteúdo da minha semana. Quero 8 ideias de reels, 2 de cada tipo: alcance, autoridade, conexão e prova social.
-
-Para cada ideia me dê: a frase de abertura na voz da paciente, o que eu falo em 3 tópicos curtos, o formato (falado, lista com objeto na mão ou bastidor) e se é conteúdo de segunda ou quarta, que leva convite.
-
-Use como matéria-prima: [cole aqui as dúvidas das consultas da semana e o que você viu na curadoria].`},
-  {n:2, title:'A abertura que prende', when:'Quando você tem um tema técnico e não sabe começar sem soar aula', text:`Tenho este tema: [tema]. Escreva 5 aberturas de no máximo 12 palavras cada. Todas têm que começar pela frase que a minha paciente diria, pela dor ou pelo desejo dela, e nunca pela explicação do conceito. Depois me diga qual das 5 você usaria e por quê.`},
-  {n:3, title:'O roteiro de reel falado', when:'Depois de escolher a abertura no prompt 2', text:`Escreva o roteiro de um reel de 30 a 45 segundos sobre [tema], com esta abertura: "[abertura escolhida]".
-
-Estrutura: a abertura, 3 pontos curtos e o fechamento. Escreva em frases curtas, uma por linha, para eu gravar frase por frase. Hoje é [dia da semana], então [termine com convite para o WhatsApp / termine com uma pergunta para os comentários].`},
-  {n:4, title:'A lista com objeto na mão', when:'O formato de lista numerada, costuma ser um dos que mais performa', text:`Crie um reel no formato de lista numerada sobre [tema, por exemplo: alimentos que parecem saudáveis e travam o emagrecimento]. São 5 itens, cada um que eu consiga segurar na mão e que exista em qualquer supermercado de bairro. Para cada item: o nome, uma frase curta do porquê e a troca que eu recomendo. Sem introdução: o vídeo já começa no item 1.`},
-  {n:5, title:'O carrossel', when:'Quando o tema render mais que um reel', text:`Escreva um carrossel de 7 slides sobre [tema]. Capa: começa pela dúvida da paciente, não pelo assunto. Slides do meio: uma ideia por slide, no máximo 25 palavras cada. Último slide: [convite para me chamar no WhatsApp / pedido para salvar o post]. Nada de comida difícil ou cara.`},
-  {n:6, title:'A legenda', when:'Depois do roteiro pronto', text:`Escreva a legenda deste reel: [cole o roteiro]. No máximo 5 linhas. A primeira linha repete a dor da abertura com outras palavras. A última é [o convite para o WhatsApp / uma pergunta para os comentários]. Sem hashtag no meio do texto.`},
-  {n:7, title:'As dúvidas das consultas', when:'A fonte que nunca seca: use o que anotou no Trello durante a semana', text:`Estas são as dúvidas que as minhas pacientes trouxeram nas consultas desta semana: [lista, sem nome de ninguém]. Transforme cada uma em uma ideia de reel e em uma ideia de story. Mantenha a pergunta com as palavras delas na abertura.`},
-  {n:8, title:'Ler os seus números', when:'Etapa 2 do planejamento, copie os títulos e as visualizações dos últimos reels', text:`Estes são os meus últimos reels, com as visualizações de cada um: [lista]. A minha média é [número]. Separe os que ficaram acima e abaixo da média e me diga o que os de cima têm em comum: a abertura, o formato, o tema, o dia. Termine com 3 decisões práticas para a próxima semana.`},
-  {n:9, title:'A curadoria', when:'Etapa 1 do planejamento, descreva o post que chamou sua atenção', text:`Vi este conteúdo de outro nutricionista e ele teve muito engajamento: [descreva a abertura, o formato e o tema]. Explique por que ele funcionou. Depois me dê 2 formas de usar o mesmo mecanismo com o meu público e com um tema diferente, sem copiar a ideia dele.`},
-];
-
-const STORIES_PROMPTS = [
-  {n:10, title:'A sequência do dia', when:'Todo dia, antes de gravar', text:`Monte a minha sequência de stories de hoje, [dia da semana]. A minha agenda: [atendimentos da manhã, o que tem à tarde, treino]. Siga esta ordem: imagem de abertura, o que eu tenho pela frente, um insight de consulta, o meu prato, uma dica, um momento humano, uma enquete, uma prova social e o fechamento. Para cada story: o que mostrar e o que falar em até 2 frases.`},
-  {n:11, title:'A sequência de convite', when:'Dias de oferta da sua linha editorial', text:`Hoje é dia de convite. Monte 4 stories que levem a pessoa até o WhatsApp sem parecer propaganda: começa por uma dor comum do meu público, mostra como eu resolvo isso no acompanhamento, traz uma prova e termina com um convite curto para tocar no link. Tema de hoje: [tema].`},
-  {n:12, title:'A sequência de social selling', when:'Dia de engajamento da sua linha editorial', text:`Crie a sequência de 3 enquetes de social selling desta semana, com o tema [tema]. Enquete 1: o objetivo dela hoje. Enquete 2: quantos quilos ela acha que precisa perder, em faixas. Enquete 3: o que impede ela de chegar lá. Duas a quatro opções por enquete, com as palavras que a paciente usaria. Depois escreva a mensagem de direct para quem responder, sem vender, só me colocando à disposição.`},
-  {n:13, title:'A caixinha de perguntas', when:'Quando a caixinha encher de respostas', text:`Recebi estas perguntas na caixinha: [lista]. Escreva a resposta de cada uma para um story falado de até 15 segundos, em linguagem simples. Marque quais delas dariam um reel inteiro.`},
-];
-
-const COM_PROMPTS = [
-  {n:14, title:'As 7 mensagens da comunidade', when:'Use no domingo, pra deixar a semana inteira do grupo pronta', text:`Escreva as 7 mensagens da semana para o grupo de WhatsApp das minhas pacientes, uma por dia, seguindo os temas: segunda recomeço, terça dica prática, quarta vitória da semana, quinta tira-dúvidas, sexta fim de semana, sábado leve e domingo organização. Cada mensagem com no máximo 4 linhas e terminando em pergunta. Nada de venda. Uma informação sobre a minha semana para você usar: [algo real, como a sua meta ou o que você vai treinar].`},
-  {n:15, title:'Deixar com a sua cara', when:'Rode em cima de qualquer texto antes de publicar', text:`Revise este texto para soar como eu falando numa consulta, e não como texto de internet: [cole o texto]. Tire frase genérica, encurte as frases longas, troque termo técnico por palavra do dia a dia e remova qualquer travessão. Me mostre o antes e depois só das frases que você mudou.`},
-];
+<script type="module">
+import { requireAuth, wireLogout } from './assets/auth-guard.js';
+import { fetchPrompts } from './assets/content-data.js';
 
 function promptCardHtml(p){
   const preview = p.text.split('\n')[0].slice(0,120);
@@ -214,40 +171,52 @@ function promptCardHtml(p){
   </article>`;
 }
 
-document.getElementById('feedPrompts').innerHTML = FEED_PROMPTS.map(promptCardHtml).join('');
-document.getElementById('storiesPrompts').innerHTML = STORIES_PROMPTS.map(promptCardHtml).join('');
-document.getElementById('comPrompts').innerHTML = COM_PROMPTS.map(promptCardHtml).join('');
+(async () => {
+  const user = await requireAuth();
+  wireLogout(user);
 
-document.querySelectorAll('[data-action="toggle"]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const body = btn.closest('.card').querySelector('.card-body');
-    const willOpen = body.hidden;
-    body.hidden = !willOpen;
-    btn.textContent = willOpen ? 'Recolher ↑' : 'Ver prompt completo ↓';
-  });
-});
+  const prompts = await fetchPrompts();
 
-document.querySelectorAll('[data-action="copy"]').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    const text = btn.closest('.card-body').querySelector('.blk-text').textContent;
-    navigator.clipboard.writeText(text.trim()).then(() => {
-      e.target.textContent = 'Copiado ✓';
-      e.target.classList.add('copied');
-      setTimeout(() => { e.target.textContent = btn.dataset.label; e.target.classList.remove('copied'); }, 1600);
-    }).catch(()=>{});
-  });
-});
+  document.getElementById('ctxTemplate').textContent = prompts.contexto || '';
+  document.getElementById('p0').textContent = prompts.entrevista || '';
+  document.getElementById('feedPrompts').innerHTML = (prompts.feed || []).map(promptCardHtml).join('');
+  document.getElementById('storiesPrompts').innerHTML = (prompts.stories || []).map(promptCardHtml).join('');
+  document.getElementById('comPrompts').innerHTML = (prompts.comunidade || []).map(promptCardHtml).join('');
 
-document.querySelectorAll('.copy-btn[data-copy-target]').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    const text = document.getElementById(btn.dataset.copyTarget).textContent;
-    navigator.clipboard.writeText(text.trim()).then(() => {
-      e.target.textContent = 'Copiado ✓';
-      e.target.classList.add('copied');
-      setTimeout(() => { e.target.textContent = btn.dataset.label; e.target.classList.remove('copied'); }, 1600);
-    }).catch(()=>{});
+  document.querySelectorAll('[data-action="toggle"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const body = btn.closest('.card').querySelector('.card-body');
+      const willOpen = body.hidden;
+      body.hidden = !willOpen;
+      btn.textContent = willOpen ? 'Recolher ↑' : 'Ver prompt completo ↓';
+    });
   });
-});
+
+  document.querySelectorAll('[data-action="copy"]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const text = btn.closest('.card-body').querySelector('.blk-text').textContent;
+      navigator.clipboard.writeText(text.trim()).then(() => {
+        e.target.textContent = 'Copiado ✓';
+        e.target.classList.add('copied');
+        setTimeout(() => { e.target.textContent = btn.dataset.label; e.target.classList.remove('copied'); }, 1600);
+      }).catch(()=>{});
+    });
+  });
+
+  document.querySelectorAll('.copy-btn[data-copy-target]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const text = document.getElementById(btn.dataset.copyTarget).textContent;
+      navigator.clipboard.writeText(text.trim()).then(() => {
+        e.target.textContent = 'Copiado ✓';
+        e.target.classList.add('copied');
+        setTimeout(() => { e.target.textContent = btn.dataset.label; e.target.classList.remove('copied'); }, 1600);
+      }).catch(()=>{});
+    });
+  });
+
+  document.getElementById('loadingScreen').hidden = true;
+  document.getElementById('mainContent').hidden = false;
+})();
 </script>
 </body>
 </html>
