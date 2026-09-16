@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banco de Sequências de Stories</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📱</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Karla:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+
+:root{
+  --bg:#F5F6EF;
+  --surface:#FFFEFA;
+  --surface-2:#EBEEE0;
+  --ink:#1E2A20;
+  --ink-soft:#57624F;
+  --ink-faint:#8A9481;
+  --border:#DBE0CD;
+  --accent:#1F6F5C;
+  --accent-ink:#FFFFFF;
+  --accent-soft:#DCEEE7;
+  --cat-human:#B4602F;
+  --cat-human-soft:#F3E3D5;
+  --cat-engage:#9C7A19;
+  --cat-engage-soft:#F1E9CC;
+  --cat-sales:#9B3F63;
+  --cat-sales-soft:#F1DEE7;
+  --shadow: 0 1px 2px rgba(30,42,32,.06), 0 8px 24px -12px rgba(30,42,32,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141D18;
+    --surface:#1B261F;
+    --surface-2:#223028;
+    --ink:#EDF2E9;
+    --ink-soft:#AAB8A3;
+    --ink-faint:#78876F;
+    --border:#2C3B32;
+    --accent:#54C4A2;
+    --accent-ink:#0E1A15;
+    --accent-soft:#1E3830;
+    --cat-human:#E5975E;
+    --cat-human-soft:#3A2A1E;
+    --cat-engage:#D9B84B;
+    --cat-engage-soft:#332C15;
+    --cat-sales:#E08FAE;
+    --cat-sales-soft:#3A2230;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141D18;
+  --surface:#1B261F;
+  --surface-2:#223028;
+  --ink:#EDF2E9;
+  --ink-soft:#AAB8A3;
+  --ink-faint:#78876F;
+  --border:#2C3B32;
+  --accent:#54C4A2;
+  --accent-ink:#0E1A15;
+  --accent-soft:#1E3830;
+  --cat-human:#E5975E;
+  --cat-human-soft:#3A2A1E;
+  --cat-engage:#D9B84B;
+  --cat-engage-soft:#332C15;
+  --cat-sales:#E08FAE;
+  --cat-sales-soft:#3A2230;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Karla',system-ui,sans-serif;
+  line-height:1.5;
+}
+h1,h2,h3,.display{
+  font-family:'Fraunces',Georgia,serif;
+  text-wrap:balance;
+  color:var(--ink);
+}
+.mono{
+  font-family:'IBM Plex Mono',ui-monospace,monospace;
+}
+a{color:inherit;}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+
+/* ---------- HERO ---------- */
+.hero{
+  padding:56px 0 36px;
+  border-bottom:1px solid var(--border);
+}
+.kicker{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--accent);
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:14px;
+}
+.kicker::before{content:"";width:18px;height:1px;background:var(--accent);display:inline-block;}
+.hero h1{
+  font-size:clamp(32px,4.2vw,52px);
+  font-weight:700;
+  margin:0 0 12px;
+  letter-spacing:-.01em;
+}
+.hero p.lede{
+  font-size:17px;
+  color:var(--ink-soft);
+  max-width:640px;
+  margin:0 0 26px;
+}
+.stat-row{display:flex;gap:28px;flex-wrap:wrap;}
+.stat{display:flex;flex-direction:column;gap:2px;}
+.stat b{
+  font-family:'Fraunces',serif;
+  font-size:26px;
+  font-variant-numeric:tabular-nums;
+  font-weight:600;
+}
+.stat span{font-size:12px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.06em;}
+
+/* ---------- ROTINA ---------- */
+.routine{
+  padding:44px 0 8px;
+}
+.section-head{margin-bottom:20px;}
+.section-head h2{font-size:24px;font-weight:600;margin:0 0 6px;}
+.section-head p{margin:0;color:var(--ink-soft);font-size:14.5px;max-width:680px;}
+
+.ritual-note{
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+  background:var(--accent-soft);
+  border:1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+  border-radius:12px;
+  padding:14px 18px;
+  margin-bottom:22px;
+}
+.ritual-note .ico{font-size:20px;line-height:1;}
+.ritual-note p{margin:0;font-size:14px;color:var(--ink);}
+.ritual-note b{color:var(--accent);}
+
+.day-strip{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:10px;
+  margin-bottom:44px;
+}
+.day-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:16px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  min-height:190px;
+  cursor:pointer;
+  text-align:left;
+  font:inherit;
+  color:inherit;
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.day-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+.day-card:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.day-card .dname{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.day-card .dcat{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:13px;
+  font-weight:600;
+  padding:4px 9px;
+  border-radius:999px;
+  width:fit-content;
+}
+.day-card .dsub{font-size:12.5px;color:var(--ink-soft);}
+.day-card .dnote{font-size:12.5px;color:var(--ink-faint);flex:1;line-height:1.45;}
+.day-card .dgo{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  color:var(--accent);
+  font-weight:600;
+}
+.day-card.rest{opacity:.72;}
+
+/* category dot colors reused */
+.dot{width:8px;height:8px;border-radius:999px;display:inline-block;}
+.cat-humanizacao{background:var(--cat-human-soft);color:var(--cat-human);}
+.cat-humanizacao .dot{background:var(--cat-human);}
+.cat-engajamento{background:var(--cat-engage-soft);color:var(--cat-engage);}
+.cat-engajamento .dot{background:var(--cat-engage);}
+.cat-vendas{background:var(--cat-sales-soft);color:var(--cat-sales);}
+.cat-vendas .dot{background:var(--cat-sales);}
+
+/* ---------- CONTROLS ---------- */
+.controls{
+  position:sticky;top:0;z-index:10;
+  background:color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  padding:16px 0;
+}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.tab{
+  font-family:'Karla',sans-serif;
+  font-weight:600;
+  font-size:13.5px;
+  padding:9px 16px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--ink-soft);
+  cursor:pointer;
+  display:flex;align-items:center;gap:7px;
+}
+.tab .count{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  opacity:.75;
+}
+.tab.active{
+  background:var(--ink);
+  color:var(--bg);
+  border-color:var(--ink);
+}
+.tab.active.cat-humanizacao{background:var(--cat-human);border-color:var(--cat-human);color:#fff;}
+.tab.active.cat-engajamento{background:var(--cat-engage);border-color:var(--cat-engage);color:#fff;}
+.tab.active.cat-vendas{background:var(--cat-sales);border-color:var(--cat-sales);color:#fff;}
+
+.controls-row2{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+.search{
+  flex:1;min-width:220px;
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:9px 14px;
+}
+.search svg{flex:none;opacity:.5;}
+.search input{
+  border:none;background:transparent;outline:none;
+  font-family:'Karla',sans-serif;font-size:14px;color:var(--ink);width:100%;
+}
+.chips{display:flex;gap:7px;flex-wrap:wrap;}
+.chip{
+  font-family:'Karla',sans-serif;
+  font-size:12.5px;font-weight:600;
+  padding:6px 12px;border-radius:999px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--ink-soft);
+  cursor:pointer;
+}
+.chip.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+
+/* ---------- GRID ---------- */
+.grid-section{padding:28px 0 80px;}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:14px;
+}
+.empty-state{
+  text-align:center;padding:60px 20px;color:var(--ink-faint);
+  font-size:14px;
+}
+
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  box-shadow:var(--shadow);
+  transition:border-color .12s ease;
+}
+.card-top{display:flex;gap:12px;align-items:flex-start;}
+.card-icon{font-size:22px;line-height:1;flex:none;margin-top:2px;}
+.card-title{
+  font-family:'Fraunces',serif;
+  font-weight:600;
+  font-size:16.5px;
+  line-height:1.28;
+  flex:1;
+}
+.card-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.subtag{
+  font-size:11px;font-weight:600;
+  padding:3px 9px;border-radius:999px;
+  display:inline-flex;align-items:center;gap:5px;
+}
+.card-preview{
+  font-size:13.5px;color:var(--ink-soft);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+
+.card-actions{display:flex;align-items:center;justify-content:space-between;margin-top:2px;}
+.expand-btn{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11.5px;font-weight:600;
+  color:var(--accent);
+  background:none;border:none;cursor:pointer;
+  display:flex;align-items:center;gap:5px;
+  padding:2px 0;
+}
+.used-label{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;color:var(--ink-faint);cursor:pointer;
+  user-select:none;
+}
+.used-label input{accent-color:var(--accent);width:14px;height:14px;}
+
+.card-body{
+  display:flex;flex-direction:column;gap:9px;
+  border-top:1px solid var(--border);
+  padding-top:12px;
+  margin-top:2px;
+}
+.blk-label{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;font-weight:600;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--ink-faint);
+  border-left:2px solid var(--border);
+  padding-left:8px;
+}
+.blk-quote{
+  font-size:13.5px;line-height:1.55;color:var(--ink);
+  border-left:2px solid var(--accent);
+  padding-left:10px;
+  white-space:pre-line;
+}
+.blk-callout{
+  font-size:13.5px;line-height:1.55;color:var(--ink);
+  background:var(--surface-2);
+  border-radius:8px;
+  padding:9px 12px;
+  white-space:pre-line;
+}
+.blk-text{font-size:13.5px;line-height:1.55;color:var(--ink-soft);white-space:pre-line;}
+.blk-list{margin:0;padding-left:18px;font-size:13.5px;line-height:1.6;color:var(--ink);}
+.blk-list li{margin-bottom:2px;}
+
+.copy-btn{
+  align-self:flex-start;
+  margin-top:4px;
+  font-family:'Karla',sans-serif;
+  font-weight:600;font-size:12.5px;
+  padding:8px 14px;border-radius:8px;
+  background:var(--ink);color:var(--bg);
+  border:none;cursor:pointer;
+  display:flex;align-items:center;gap:6px;
+}
+.copy-btn.copied{background:var(--accent);}
+
+footer{
+  border-top:1px solid var(--border);
+  padding:28px 0 50px;
+  color:var(--ink-faint);font-size:12.5px;
+}
+
+@media (max-width:860px){
+  .day-strip{grid-template-columns:repeat(4,1fr);}
+}
+@media (max-width:560px){
+  .day-strip{grid-template-columns:repeat(2,1fr);}
+  .wrap{padding:0 16px;}
+}
+
+</style>
+</head>
+<body>
+<div class="wrap hero">
+  <div class="kicker">Playbook de Stories · Nutris</div>
+  <h1>Banco de Sequências de Stories</h1>
+  <p class="lede">Roteiros prontos de Stories organizados em três pilares — Humanização, Engajamento e Vendas — com a rotina semanal pra saber qual usar em cada dia, não só onde guardar.</p>
+  <div class="stat-row">
+    <div class="stat"><b id="statTotal">106</b><span>Sequências</span></div>
+    <div class="stat"><b>3</b><span>Pilares</span></div>
+    <div class="stat"><b id="statSub">9</b><span>Sub-categorias</span></div>
+  </div>
+</div>
+
+<div class="wrap routine">
+  <div class="section-head">
+    <h2>Rotina semanal sugerida</h2>
+    <p>A base sozinha não cria hábito de postar. Cada dia puxa um pilar diferente — clica no dia pra abrir as sequências certas lá embaixo.</p>
+  </div>
+
+  <div class="ritual-note">
+    <span class="ico">🕐</span>
+    <p><b>Ritual fixo diário:</b> escolha 1 sequência de Humanização → Rituais e repita <b>todo dia, sempre no mesmo horário</b>. É o que ensina sua audiência a esperar seu Story — o resto da semana gira em torno disso.</p>
+  </div>
+
+  <div class="day-strip" id="dayStrip"></div>
+</div>
+
+<div class="controls">
+  <div class="wrap">
+    <div class="tabs" id="tabs"></div>
+    <div class="controls-row2">
+      <div class="search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="searchInput" type="text" placeholder="Buscar por título ou palavra no roteiro…" />
+      </div>
+      <div class="chips" id="chips"></div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap grid-section">
+  <div class="grid" id="grid"></div>
+  <div class="empty-state" id="emptyState" hidden>Nenhuma sequência encontrada com esse filtro.</div>
+</div>
+
+<div class="wrap"><footer>Fonte: Banco de Sequências de Stories (Notion) · Reorganizado em pilares, sub-categorias e rotina semanal para uso das nutris.</footer></div>
+
+<script id="seqdata" type="application/json">[{"category":"humanizacao","category_label":"Humanização","icon":"🍿","title":"Opção 01 - Bastidores Timelapse","subcategory":"Bastidores","blocks":[["quote","É muito importante que o seu paciente consiga se conectar com você, e pra isso, existem várias formas.\nNesse story, você vai criar um timelapse (video em velocidade rápida) durante a construção de um plano alimentar.\nIsso gera conexão, mostrando aos seus seguidores um pouco dos bastidores do seu trabalho.\nColoque o seu celular em um local onde consiga filmar a tela do seu computador ou você, e deixe gravando (Iphone possui uma função \"timelapse” que grava já na velocidade rápida, caso contrário utilize o aplicativo CapCut e acelere o video)."],["quote","Poste o seu story com alguma frase, exemplo:\n”Hoje foi dia de criar um plano alimentar individualizado para a minha paciente (nome)! Seria ótimo se fosse tão rápido assim, não é? 😅”"],["text","Quer ver você fazendo esse story! Posta e manda pra gente em @nutriclubdigital"]]},{"category":"humanizacao","category_label":"Humanização","icon":"🍿","title":"Opção 02 - Bastidores Timelapse","subcategory":"Bastidores","blocks":[["quote","Outra opção de timelapse é durante o atendimento (sem expor o rosto/corpo do paciente).\nPode deixar o celular mostrando apenas você - principalmente se durante a consulta você utiliza ferramentas visuais para explicação (como as lâminas educativas que disponibilizamos).\nIsso mostra autoridade e ainda gera conexão/humanização!"],["text","Quer ver você fazendo esse story! Posta e manda pra gente em @nutriclubdigital"]]},{"category":"humanizacao","category_label":"Humanização","icon":"🕐","title":"Opção 01 - Rituais com a sua audiência","subcategory":"Rituais","blocks":[["quote","Crie momentos rotineiros para repetir com a sua audiência. Desde o clássico “Bom dia com café”, até um story no meio da tarde para lembrar sua audiência de beber água, lembre-se sempre de dar um tom pessoal nesse ritual, algo que faça as pessoas lembrarem que é um momento entre você e seus seguidores."],["callout","Obs: Não importa qual a sua escolha, o segredo aqui é repetir TODOS OS DIAS sempre no mesmo horário, ou o mais próximo desse horário."],["callout","Dica extra: Tente criar rituais que de fato sejam um costume seu ou algo que você queira começar a fazer, assim você se sentirá motivada pela própria audiência com o passar do tempo"]]},{"category":"humanizacao","category_label":"Humanização","icon":"💚","title":"Opção 01 - História de superação/conquista","subcategory":"Suas histórias","blocks":[["quote","A idéia aqui é contar uma história de superação (em 1 ou 2 stories no máximo) que gere conexão com o público, pode ser algo simples, mas que de fato era um problema para você e que você venceu. Com isso sua audiência vai entender que você é uma pessoa real, com medos e desafios e isso vai aproximar vocês."],["callout","Ex1: Conte como você superou a falta de motivação para treinar todos os dias pela manhã.\nEx2: Conte como você venceu o seu medo de voar de avião.\nEx3: Conte como você conseguiu beber mais água por dia."],["text","Dica extra: Ao final desses stories, você pode abrir espaço para outras pessoas compartilharem suas histórias de superação no seu direct."]]},{"category":"humanizacao","category_label":"Humanização","icon":"🕐","title":"Opção 02 - A nutri que ninguém vê","subcategory":"Rituais","blocks":[["quote","Use um espaço nos seus stories para documentar um outro lado seu, fora dos consultórios, quem é a(o) Nutri X? Aqui vale mostrar hobbies, costumes, lugares que gosta de visitar, interesses em outras áreas e etc."],["quote","O objetivo aqui é aumentar a conexão com os seus pacientes através de breves momentos onde você não fala de trabalho."],["callout","Dica extra: Sempre que for publicar um story desse tipo, faça um story “encerrando” o assunto anterior e depois vá para o tópico fora do trabalho."],["quote","Ex: Se você gosta de sair pra correr depois do trabalho, faça um story fechando o notebook ou a porta do consultório antes de postar sobre sua corrida do dia."]]},{"category":"humanizacao","category_label":"Humanização","icon":"💚","title":"Opção 02 - Evolução","subcategory":"Suas histórias","blocks":[["quote","Compartilhe com a sua audiência a evolução da sua estrutura de trabalho, como era antes o seu consultório e como ficou agora ou como eram os seus materiais e como estão hoje, como você fazia um planejamento e como faz hoje em dia."],["callout","Não importa o tamanho da evolução, compartilhe e celebre com a sua audiência o fato de que você evoluiu em algum aspecto."]]},{"category":"humanizacao","category_label":"Humanização","icon":"💚","title":"Opção 03 - Compartilhe um sonho","subcategory":"Suas histórias","blocks":[["quote","Utilize seus momentos menos turbulentos da rotina para compartilhar sonhos materiais com a sua audiência (Um iPhone novo, um notebook moderno, um carro, uma cadeira nova pro escritório…)"],["callout","Comente com todos que você está “namorando” esse objeto e que um dia vai conseguir, que está trabalhando duro pra conseguir atingir essa meta."],["quote","Se for possível, explique os motivos desse sonho para seus seguidores também, assim eles vão se conectar ainda mais com você e de quebra celebrarão muito quando conseguir conquistar esse sonho."]]},{"category":"humanizacao","category_label":"Humanização","icon":"💚","title":"Opção 04 - Desabafo de sexta","subcategory":"Suas histórias","blocks":[["callout","Esse tipo de Story é muito bom para ser publicado na sexta-feira ou no sábado pela manhã."],["quote","A ideia aqui é fazer um resumão da semana e contar os pontos que mais te frustraram e mais te empolgaram, compartilhe com a sua audiência o que deu certo no seu planejamento e o que não funcionou."],["quote","Mostre para todos que imprevistos acontecem e você não é um robô, apenas resolveu não desistir."]]},{"category":"humanizacao","category_label":"Humanização","icon":"🕐","title":"Opção 03 - Músicas que inspiram","subcategory":"Rituais","blocks":[["callout","Story 1 - Gancho"],["quote","A ideia aqui é criar um ritual de sugerir uma música para “acompanhar” o seu dia"],["quote","Ex: Essa semana vou trazer uma música por dia pra gente começar a semana com a energia lá em cima. A de hoje será essa (Adicione uma música que goste)"],["callout","Story 2 - CTA"],["quote","Convide o seu potencial paciente para fazer o mesmo (Vale até criar uma piada interna para aumentar o senso de comunidade)"],["quote","Ex: Quero ver todo mundo começando o dia com a sua música mais inspiradora, me marcando e colocando a frase “TeamNutriX” nos Stories."]]},{"category":"humanizacao","category_label":"Humanização","icon":"💚","title":"Opção 05 - Nova conquista","subcategory":"Suas histórias","blocks":[["quote","Cada conquista deve ser celebrada, não importa o tamanho. Mesmo que esteja começando ou já tenha experiência, sempre que quiser aumentar ainda mais a humanização no seu perfil, compartilhe conquistas que você teve no seu dia a dia."],["callout","Um equipamento novo, uma parceria, uma meta de número de pacientes e etc."]]},{"category":"humanizacao","category_label":"Humanização","icon":"💚","title":"Opção 06 - Crítica para o seu “Eu do passado”","subcategory":"Suas histórias","blocks":[["quote","A ideia aqui é contar uma história para os seus seguidores falando sobre um erro que você cometeu, mas dizendo que se trata de um “Paciente X”."],["quote","Dê algumas características físicas que se assemelhem a você, mas sem revelar demais."],["quote","Após explicar o erro para sua audiência, peça para que eles comentem no seu direct algo como:"],["callout","Na sua opinião, por que você acha que esse paciente não consegue [resultado do seu atendimento]?"],["quote","Compartilhe algumas respostas mais interessantes e no final, revele que na verdade, essa pessoa era você mesma e que no final das contas, até você já cometeu esse erro “bobo” que todos os pacientes podem cometer, mas com o seu acompanhamento, é possível corrigir."]]},{"category":"humanizacao","category_label":"Humanização","icon":"🍿","title":"Opção 03 - Resumo do dia","subcategory":"Bastidores","blocks":[["quote","A ideia é criar uma sequência de poucos stories no final do dia fazendo quase um resumo do que você fez ao longo do dia e principalmente o que estava planejado e não foi feito."],["callout","Mostre que até mesmo você as vezes não consegue dar conta de tudo e está tudo bem!"]]},{"category":"humanizacao","category_label":"Humanização","icon":"💚","title":"Opção 07 - Erros que já cometi","subcategory":"Suas histórias","blocks":[["callout","Story 1 - Gancho:"],["quote","“Vou contar um erro que cometi no início da minha carreira como nutricionista...”"],["callout","Story 2 - Confissão:"],["quote","Fale sobre um erro comum que você cometeu (por exemplo, insistir em uma abordagem rígida com pacientes)."],["quote","Escreva: “Segure para descobrir qual foi o erro!”"],["callout","Story 3 - Desenvolvimento:"],["quote","Explique como você aprendeu com o erro e como isso te tornou uma profissional mais empática e flexível."],["callout","Story 4 - Interação:"],["quote","Caixinha: “E você, já cometeu algum erro que te ensinou muito? Compartilha comigo!”"]]},{"category":"humanizacao","category_label":"Humanização","icon":"💚","title":"Opção 08 - Você também muda","subcategory":"Suas histórias","blocks":[["quote","Crie uma sequência de stories, conversando com sua audiência sobre algo que você não gostava de fazer antes, mas depois de se dedicar um pouco, mesmo sem muita vontade ainda, você persistiu e hoje essa atividade/hobby/comida/etc faz parte da sua rotina."]]},{"category":"humanizacao","category_label":"Humanização","icon":"💚","title":"Opção 09 - Momento marcante","subcategory":"Suas histórias","blocks":[["quote","Compartilhe nos seus stories um momento marcante que você considera uma virada de chave na sua carreira, evidencie isso com empolgação e explique pros seus seguidores como esse momento lhe torna ainda mais uma autoridade no seu segmento."]]},{"category":"humanizacao","category_label":"Humanização","icon":"💚","title":"Opção 10 - Primeiro trabalho","subcategory":"Suas histórias","blocks":[["quote","Conte sua história sobre o primeiro atendimento que você fez, seja franca em relação as dificuldades, medos e anseios que sentiu nesse momento e depois finalize a sequência agradecendo aos seus pacientes pela confiança e mostrando que hoje você é autoridade no seu foco."]]},{"category":"humanizacao","category_label":"Humanização","icon":"🕐","title":"Opção 04 - Nomes únicos","subcategory":"Rituais","blocks":[["quote","Utilizar nomes próprios te ajuda a sair do conteúdo “mais do mesmo” e faz seu público se envolver e criar uma identificação muito maior com você."],["quote","Não tenha medo de criar nomes únicos para sua metodologia, sua forma de abordar, a maneira como chama seu plano alimentar, o que você achar que será único entre você e seu paciente, vale ter um nome próprio afim de destacar você na multidão."],["callout","OBS: Use esse recurso com cuidado, se exagerar, pode soar infantil."]]},{"category":"humanizacao","category_label":"Humanização","icon":"🍿","title":"Opção 04 - Meu paciente mais desafiador","subcategory":"Bastidores","blocks":[["callout","Story 1 - Gancho:"],["quote","“Hoje vou contar sobre o caso mais desafiador que já atendi...”"],["callout","Story 2 - O Desafio:"],["quote","Apresente brevemente a situação de um paciente com dificuldades em aderir ao plano nutricional."],["quote","Escreva: “Segure para ler o caso”"],["callout","Story 3 - Desenvolvimento:"],["quote","Explique o que você fez de diferente nesse atendimento e como ajustou a abordagem para que ele conseguisse seguir o plano."],["callout","Story 4 - Interação:"],["quote","Caixinha: “E você, já passou por um desafio na sua rotina alimentar? Como lidou com isso?”"]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - A importância de ouvir o paciente","subcategory":"Caixinhas de Perguntas","blocks":[["callout","Story 1 - Chamando a atenção:"],["quote","\"Você já parou para pensar como ouvir pode transformar um atendimento?\""],["callout","Story 2 - Retenção:"],["quote","Relate uma história de um paciente que, ao ser escutado com atenção, conseguiu superar barreiras em sua jornada de saúde."],["quote","Escreva: “Segure para ler a história completa”"],["callout","Story 3 - Arremate"],["quote","Explique como, ao dedicar tempo para ouvir com empatia, você conseguiu identificar pontos cruciais que não seriam revelados em uma abordagem mais rápida."],["callout","Story 4 - Interação:"],["quote","Caixinha: “E você, já sentiu que foi verdadeiramente ouvido por um profissional de saúde? Conta para mim!”"]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - Promessas não cumpridas","subcategory":"Caixinhas de Perguntas","blocks":[["callout","Story 1 - Gancho:"],["quote","“Quantas vezes você já prometeu que na segunda-feira tudo seria diferente?”"],["callout","Story 2 - Reflexão:"],["quote","Aborde como muitas vezes o ciclo de promessas e frustrações pode ser um padrão silencioso que gera desgaste emocional."],["quote","Escreva: “E na terça… você já se sentia culpada de novo?”"],["callout","Story 3 - Solução emocional:"],["quote","Apresente a necessidade de quebrar esse ciclo e focar em pequenas mudanças consistentes, em vez de grandes promessas."],["quote","Escreva: “A chave está em pequenas vitórias, e eu posso te ajudar a encontrar essas vitórias.”"],["callout","Story 4 - Interação:"],["quote","Caixinha: “Qual foi a promessa mais difícil que você já fez para si mesma?”"]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - SAC da Nutri","subcategory":"Caixinhas de Perguntas","blocks":[["quote","Sugestão de caixinha indicada para humanizar, engajar, ensinar e entreter. É o gancho perfeito para você misturar assuntos mais técnicos com um tom mais leve e bem humorado e responder tudo de forma autêntica"],["callout","Ex: SAC da nutri - Dúvidas, reclamações, fofocas e afins."],["quote","OBS: Caso queira, também pode pegar as melhores perguntas e criar um reels com essa sequência."]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - Teste a sua audiência","subcategory":"Caixinhas de Perguntas","blocks":[["quote","Crie uma caixinha de perguntas junto com um planejamento alimentar ou algo que represente o seu serviço de forma direta, com um ou dois erros nele e peça para que os seus seguidores analisem e comentem o que está errado."],["callout","Obs: Caso você não possua uma quantidade boa de engajamento nos Stories, sugerimos que você mesma adicione algumas respostas erradas para estimular seus seguidores a responderem também."]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - Conhecendo novos seguidores","subcategory":"Caixinhas de Perguntas","blocks":[["quote","Crie uma caixinha: Novo por aqui? Me conta por que você me seguiu?"],["callout","A intenção dessa caixa é entender se as dúvidas dos seus seguidores estão alinhadas com a sua metodologia e o seu estilo de consulta. Responda as perguntas com elogios e confirmando que o seu perfil é o melhor lugar para sanar essa dor."]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - Sobre a consulta","subcategory":"Caixinhas de Perguntas","blocks":[["quote","Caixinha: O que você gostaria de saber sobre a minha consulta?"]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - Terceirize o conteúdo","subcategory":"Caixinhas de Perguntas","blocks":[["quote","A ideia com esse tipo de Story é pedir pra sua audiência contribuir com o conteúdo e ainda incentiva a interação nos seus stories."],["callout","Ex: Crie um Story com um planejamento alimentar antigo de algum paciente seu (Se não tiver, pode criar um fictício) junto com uma caixinha de perguntas onde você vai pedir pra sua audiência apontar os erros ou pontos de melhoria nesse planejamento. As respostas das caixinhas podem vir com piadas internas ou dicas valiosas que reforcem sua autoridade no assunto."]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - O que você ainda não entendeu?","subcategory":"Caixinhas de Perguntas","blocks":[["callout","Caixinha: Qual assunto eu costumo falar que você ainda não entende tão bem?"],["quote","OBS1: A ideia aqui é gerar insights sobre conteúdos que podem estar sendo passados de maneira muito complexa, aproveite para responder as perguntas com analgias que tornem os conceitos mais fáceis de serem assimilados. Você pode lançar um caixinha como essa para fazer dela a única sequência do dia."],["quote","OBS2: Você também pode utilizar esse tipo de caixinha para explicar de maneira mais profunda um assunto que você queira, mas que está sentindo que não “ficou claro” ainda na sua comunicação, nesse caso, você mesma envia as perguntas relacionadas a esse tópico."]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - O que está te impedindo?","subcategory":"Caixinhas de Perguntas","blocks":[["callout","Story 1 - Gancho"],["quote","Com o auxílio dessa caixinha de perguntas, você saberá quais são as urgências ocultas que a sua audiência possui em relação a promessa que você oferece com o seu atendimento"],["quote","Ex: Se o seu objetivo hoje é (emagrecer) e você ainda não chegou lá, alguma coisa pode estar te atrapalhando, concorda? Enquete: (Concordo | Concordo muito)"],["callout","Story2 - Desenvolvimento"],["quote","Demonstre empatia"],["quote","Ex: Eu não vou dizer que seja “falta de vergonha na cara” ou que você esteja arrumando “desculpas”, mas preciso que você seja sincera comigo, mas mais ainda com você"],["callout","Story 3 - CTA"],["quote","Faça com que o seu potencial paciente chegue a conclusão sobre o que está afetando ele"],["quote","Ex: Sem medo de julgamentos responde aqui (Caixinha: O que você acredita que te impede de emagrecer hoje?)"]]},{"category":"engajamento","category_label":"Engajamento","icon":"💬","title":"Opção - Fã ou Hater","subcategory":"Interagindo","blocks":[["quote","Selecione um comentário ou mensagem no direct de algum seguidor hater que não gostou/concordou com um conteúdo seu e, sem expor o nome da pessoa, mostre para seus seguidores a mensagem e depois explique o porque você discorda e como sua visão diferencia da visão do hater."]]},{"category":"engajamento","category_label":"Engajamento","icon":"💬","title":"Opção - Desafio em grupo","subcategory":"Interagindo","blocks":[["callout","AVISO: Esse tipo de story só deve ser feito se você tiver a intenção de manter seus potenciais pacientes engajados, com a devida atenção e/ou motivação sendo documentadas nos Stories."],["quote","Crie um desafio de X dias onde todos devem seguir um mesmo hábito saudável e postar nos Stories marcando você e com uma Hashtag única que só faça sentido para quem está nesse desafio."],["callout","Ex: 30 dias tomando 3 litros de água por dia #HidratadosDaNutri - Poste todos os dias o quanto de água você bebeu e me marque que eu vou repostar."],["callout","Obs: O objetivo desse desafio é aumentar o senso de comunidade entre os seus seguidores, as possibilidades de conteúdo com esse desafio são gigantes e no final, você pode mostrar as mensagens dos participantes contando como se sentiram. Pode até criar um destaque para isso."]]},{"category":"engajamento","category_label":"Engajamento","icon":"💬","title":"Opção - Elogie quem te segue!","subcategory":"Interagindo","blocks":[["quote","Aproveite as marcações dos seus pacientes para salientar pontos positivos neles que só são possíveis graças ao seu acompanhamento nutricional."],["callout","Ex: Foto de um prato de uma paciente com algum item “diferente” + legenda: Sim, quem faz parte do método XPTO sabe como se manter firme sem abrir mão do docinho!"]]},{"category":"engajamento","category_label":"Engajamento","icon":"💬","title":"Opção - Hora de desabafar","subcategory":"Interagindo","blocks":[["quote","Estimule seus seguidores a desabafarem no seu direct sobre algum tema corriqueiro ou polêmico no seu consultório. Depois compartilhe algumas histórias que julgar interessante com breves comentários. Apenas para estimular mais pessoas enviando mensagens"],["callout","Ex: Você já teve alguma experiência negativa treinando em jejum? Me conta aqui…"],["callout","Obs: Não utilize a caixinha de perguntas para esse tipo de story, a métrica de resposta no direct torna seus stories muito mais relevantes e isso faz com que você apareça mais na lista de Stories daqueles que te seguem."]]},{"category":"engajamento","category_label":"Engajamento","icon":"💬","title":"Opção - Não consigo aceitar","subcategory":"Interagindo","blocks":[["quote","Apresente sua opinião sobre algo que você não admite na nutrição. (Você despertará a curiosidade de quem te segue para continuar assistindo)."],["callout","Story 1 - Gancho impactante"],["quote","Ex: Não consigo aceitar que vocês gostam desse tal de Super Coffee!"],["callout","Story 2 - Posicionamento emocional"],["quote","Exponha aqui o seu posicionamento do ponto de vista mais emocional."],["quote","Ex: Nitidamente é um café solúvel 100x mais caro e com um gosto que, particularmente, eu acho intragável"],["callout","Story 3 - Posicionamento específico"],["quote","Exponha um ponto de vista técnico sobre o assunto"],["quote","Ex: Sem falar que o que ele promete não compensa, nem o sabor, nem muito menos o preço que se paga, querem uma dica infalível?"],["callout","Story 4 - Sua solução"],["quote","Agora levante a bandeira da sua solução específica"],["quote","Ex: Cafezinho preto, tradicional, sem açúcar, daqueles que você encontra no mercado mesmo, sabe?! Mais barato, mais gostoso e mais eficaz."]]},{"category":"engajamento","category_label":"Engajamento","icon":"💬","title":"Opção - Desça do pedestal","subcategory":"Interagindo","blocks":[["quote","Crie um story compartilhando algo que você não sabe, mas gostaria de saber e pergunte se algum dos seus seguidores entende do assunto, com as respostas, faça um momento de interação que pode acontecer no direct e depois voltar como um print nos Stories."],["callout","Obs: Cuidado ao compartilhar opiniões de terceiros sem a devida autorização, sempre pergunte se pode compartilhar antes ou oculte o nome e a foto da pessoa antes de postar."]]},{"category":"engajamento","category_label":"Engajamento","icon":"💬","title":"Opção - O papel da hidratação","subcategory":"Interagindo","blocks":[["callout","Story 1 - Chamando a atenção:"],["quote","“Você sabia que a maioria das pessoas não bebe água o suficiente no dia a dia?”"],["callout","Story 2 - Informação:"],["quote","Explique rapidamente a importância da hidratação para a saúde."],["quote","Escreva: “Segure para entender mais!”"],["callout","Story 3 - Desenvolvimento:"],["quote","Dê dicas simples de como incluir mais água na rotina. Mostre sua própria garrafa d'água como exemplo."],["callout","Story 4 - Interação:"],["quote","Caixinha: “Quantos litros de água você toma por dia? Responde aqui!”"]]},{"category":"engajamento","category_label":"Engajamento","icon":"💬","title":"Opção - O que me motiva","subcategory":"Interagindo","blocks":[["callout","Story 1 - Gancho:"],["quote","“Você já parou para pensar no que te faz levantar da cama todos os dias?”"],["callout","Story 2 - Reflexão Pessoal:"],["quote","Compartilhe o que te motiva a ser nutricionista e como isso impacta seus pacientes."],["quote","Escreva: “Aqui está o que me faz seguir firme na minha missão...”"],["callout","Story 3 - Desenvolvimento:"],["quote","Fale sobre momentos gratificantes no seu trabalho, como ver a transformação dos pacientes. Inclua uma foto de antes e depois (com autorização) ou um depoimento."],["callout","Story 4 - Interação:"],["quote","Caixinha: “O que te motiva no seu dia a dia? Vamos compartilhar histórias!”"]]},{"category":"engajamento","category_label":"Engajamento","icon":"💬","title":"Opção - Valores inegociáveis","subcategory":"Interagindo","blocks":[["callout","Story 1 - Gancho"],["quote","Alerta de possíveis spoilers nos próximos stories…"],["callout","Story 2 - Desenvolvimento"],["quote","Fale sobre algo que você aprendeu e faz diferença no seu atendimento"],["quote","Ex: Entender que no processo de emagrecimento saudável, contar calorias não é a única coisa."],["callout","Story 3 - Desenvolvimento Pt2"],["quote","Cite uma aplicação desse ensinamento."],["quote","Ex: Desde que entendi isso, comecei a criar planos ainda mais personalizados para os meus pacientes"],["callout","Story 4 - Desenvolvimento Pt3."],["quote","Cite um exemplo prático dessa aplicação"],["quote","Ex: Chegando a incluir em uma dieta de emagrecimento esse lanche aqui (Print de um lanche pouco convencional no plano alimentar de um paciente)"],["callout","Story 5 - CTA"],["quote","Ex: E você, o que aprendeu recentemente que não consegue mais abrir mão? Responde esse Story!"]]},{"category":"engajamento","category_label":"Engajamento","icon":"💬","title":"Opção - O poder do café da manhã","subcategory":"Interagindo","blocks":[["callout","Story 1 - Gancho:"],["quote","“Você sabia que o café da manhã é mais importante do que você imagina?”"],["callout","Story 2 - Informação:"],["quote","Fale sobre um erro comum que você cometeu (por exemplo, insistir em uma abordagem rígida com pacientes)."],["quote","Escreva: “Segure para descobrir qual foi o erro!”"],["callout","Story 3 - Desenvolvimento:"],["quote","Explique como você aprendeu com o erro e como isso te tornou uma profissional mais empática e flexível."],["callout","Story 4 - Interação:"],["quote","Caixinha: “E você, já cometeu algum erro que te ensinou muito? Compartilha comigo!”"]]},{"category":"engajamento","category_label":"Engajamento","icon":"💬","title":"Opção - Todo mundo tem um Hater","subcategory":"Interagindo","blocks":[["quote","Preparação: Tire um print de algum comentário sem noção que você já recebeu relacionado ao seu atendimento ou conteúdo (Pode ter sido nos Direct, nos comentários ou até mesmo no WhatsApp) e compartilhe no primeiro"],["callout","Story 1 - Chamando a atenção"],["quote","O primeiro Story será somente um fundo neutro ou uma foto não muito poluída, com uma frase impactante para chamar a atenção."],["quote","Ex: Você não vai acreditar o que acabou de chegar no meu direct… (Adapte para a sua linguagem)"],["callout","Story 2 - O print + retenção"],["quote","Escreva na parte superior: “Segure na tela para ler tudo”"],["quote","Escreva abaixo do print: Eu juro que em um primeiro momento fiquei sem saber o que responder, mas depois respirei fundo e como uma pessoa altamente espiritualizada, conduzi da melhor forma possível (Coloque aqui a resposta que você deu para essa situação). Eu vou explicar melhor no próximo Story."],["callout","Story 3 - Desenvolvimento"],["quote","Desenvolva sobre a sua resposta, o que te motivou a responder assim, os motivos pelos quais você discorda ou concorda com o hater, reafirme sua autoridade sobre o assunto. Se posicione nesse Story!"],["callout","Story 4 - CTA"],["quote","Nesse Story você vai criar uma caixinha com a seguinte pergunta: E você, como reagiria em uma situação dessas?"]]},{"category":"engajamento","category_label":"Engajamento","icon":"💬","title":"Opção - Vocês pedem sempre","subcategory":"Interagindo","blocks":[["callout","Story 1 - Gancho"],["quote","Selecione um tema que a sua audiência sempre te pergunta e enfim você vai explicar passo a passo."],["quote","Ex: Finalmente vou ensinar o que vocês sempre me perguntam sobre o meu mix de sementes… Vamos? Enquete: (Sim | Tava esperando)"],["callout","Story 2 - Desenvolvimento"],["quote","Faça um tutorial, que pode ser em vídeo ou em texto (o importante é que tenha imagens para ilustrar) do assunto abordado."],["quote","Considere que, se for gravado, utilize no máximo 2 stories, para não ficar cansativo para a audiência."],["callout","Story 3 - Arremate"],["quote","Use uma enquete para perguntar se a audiência gostou."],["quote","Ex: Curtiram dessa combinação? [Enquete SIM | NÃO] Pronto, agora vocês já sabem o meu segredinho!"],["callout","OBS: Caso esse “Segredo” seja algo muito ligado ao seu nicho, você pode salvar essa sequência como um Destaque exclusivo para isso e citar ele sempre que alguém voltar a perguntar."]]},{"category":"engajamento","category_label":"Engajamento","icon":"💬","title":"Opção - Alimentação consciente","subcategory":"Interagindo","blocks":[["callout","Story 1 - Chamando a atenção:"],["quote","“Sabia que comer não é só sobre nutrição, mas também sobre emoções?”"],["callout","Story 2 - Reflexão:"],["quote","Conte sobre um momento em que você percebeu que seu paciente tinha uma relação emocional com a comida, e como isso influenciava a sua alimentação."],["callout","Story 3 - Desenvolvimento:"],["quote","Explique como trabalhar a alimentação consciente e o impacto que isso pode ter na vida do paciente."],["callout","Story 4 - Interação:"],["quote","Caixinha: “Você já parou para pensar na relação entre suas emoções e a comida? Me conta!”"]]},{"category":"engajamento","category_label":"Engajamento","icon":"💬","title":"Opção - Cultura de resultado","subcategory":"Interagindo","blocks":[["quote","Incentive as pessoas a mandarem alguma foto ou mensagem que reforce a mudança positiva causada pelo seu acompanhamento"],["callout","Ex: Se você fala com o público que gosta de corridas, incentive seus seguidores a postar as medalhas que conseguiram, afinal, com um acompanhamento nutricional, foi possível atingir uma meta ainda mais."]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - Caixinha da Lista pensada","subcategory":"Caixinhas de Perguntas","blocks":[["callout","Você vai tirar um dia para abrir uma caixinha de perguntas com a sua audiência e no meio das perguntas você mesma vai colocar um pergunta que reflita um medo comum da sua audiência."],["callout","Na sequência você vai responder com uma Lista de soluções (Que você já preparou antes de colocar a pergunta) e colocar uma solução em cada Story seguinte, pelo menos 5 itens na lista."],["quote","Ex: Pergunta -  “Estou com medo de estragar tudo nesse final de semana. O que eu posso comer”\nResposta - Vou te dar X Opções do que você pode comer nesse final de semana e não prejudicar seu emagrecimento:\nStory 1 - Pizza de Frango (Foto ou vídeo de uma pizza)\nStory 2 - Hambúrguer caseiro de Patinho Moído (Foto ou vídeo)\nStory 3 - Espetinho de Carne…"]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - Caixinha da solução prática","subcategory":"Caixinhas de Perguntas","blocks":[["callout","A ideia dessa caixinha é criar uma quantidade de \"Soluções práticas” para aumentar a percepção de Autoridade que sua audiência tem de você"],["text","Abra uma caixinha de perguntas sobre um tema específico do seu nicho e que você possa sugerir soluções fáceis e práticas para os principais problemas"],["quote","Ex: Caixinha - Um problema > Um chá como solução"]]},{"category":"engajamento","category_label":"Engajamento","icon":"❓","title":"Opção - Fim de semana","subcategory":"Outras Ferramentas","blocks":[["quote","Que tal perguntar pros seus seguidores sobre a alimentação no final de semana?\nSugestão de legenda pro story:\n- “Final de semana passou e muitas pessoas tentam recompensar possíveis exageros, mas foque em voltar à sua rotina normalmente!”\n[Enquete] ”Como foi sua alimentação no final de semana?”\nSegui o plano ☑️ / Chutei o balde 🪣"]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - Caixinha: Absurdos e Exageros","subcategory":"Caixinhas de Perguntas","blocks":[["callout","A ideia com essa sequência é criar uma caixinha de perguntas onde você vai criar algumas perguntas com os extremos mais recentes sobre o seu segmento e responder com “Absurdo” caso seja uma completa mentira ou “Exagero” quando ela for só uma situação mais explicada"],["quote","Ex: Não pode comer tomate se quiser emagrecer = Absurdo (Porque o tomate não possui uma quantidade calórica expressiva para afetar uma dieta de emagrecimento)."],["quote","Ex2: Não posso comer pão francês se eu quiser emagrecer = Exagero (Porque você pode incluir numa dieta de emagrecimento, desde que consiga equilibrar a ingestão calórica)."],["callout","Você pode fazer pelo menos umas 3 ou 4 “perguntas” e explicar melhor ao longo de no máximo 2 stories para cada pergunta. Lembre-se sempre de adaptar a estratégia para o seu nicho."]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - Consulte a nutri","subcategory":"Caixinhas de Perguntas","blocks":[["quote","Agora que você mostrou um pouco dos seus bastidores, incentive os seus seguires a perguntem pra você!\nAbra uma caixinha de perguntas com uma foto sua de fundo, com o título “consulte a nutri”.\nVocê pode também colocar subtítulos abaixo da caixinha - como uma forma de dar “ideias” do que eles podem perguntar (uma caixinha avulsa, sem contexto, é muito vago e não chama atenção).\nInicie você mesmo mandando perguntas, isso faz com que eles se sintam mais confortáveis em perguntar - por favor, não desista se na primeira caixinha ninguém mandar perguntas. Isso é comum! Continue e logo enviarão!"]]},{"category":"engajamento","category_label":"Engajamento","icon":"❓","title":"Opção - Quiz da Nutri","subcategory":"Outras Ferramentas","blocks":[["callout","Comece o dia falando que quer testar o quanto quem te segue está atento ao seu conteúdo e na sequência crie um “Quiz” com perguntas específicas (Pelo menos 3 perguntas) da sua especialidade e se possível, com respostas que sejam nitidamente algo que você diria (utilize jargões, piadas internas ou até mesmo palavras específicas que você no dia a dia), algo que torne cada resposta óbvia para quem te segue."],["quote","A ideia por trás dessa sequência é gerar uma separação dos seguidores mais “atentos” ao seu conteúdo e poder recomendar conteúdos seus para os que erraram nas respostas."]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - Caixinha do Mito Moderno","subcategory":"Caixinhas de Perguntas","blocks":[["callout","Crie uma caixinha com uma pergunta como “Qual milagre da nutrição você ouviu falar recentemente?”"],["quote","Com as respostas, você fica por dentro das polêmicas do seu nicho que a sua audiência mais tem consumido e ainda pode aproveitar para se posicionar sobre assuntos controversos e reforçar sua autoridade."]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - Pergunta direcionada","subcategory":"Caixinhas de Perguntas","blocks":[["quote","Crie uma caixinha de “Consultoria Grátis“ para gerar uma interação nos seus Stories e aproveite para você mesma criar pelo menos 5 perguntas com as principais dúvidas da sua audiência."],["callout","Depois de responder, salve esses stories nos destaques."]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - O espelho e a verdade","subcategory":"Caixinhas de Perguntas","blocks":[["callout","Story 1 - Gancho:"],["quote","“Quando foi a última vez que você olhou no espelho e se sentiu verdadeiramente bem?”"],["callout","Story 2 - Conexão emocional:"],["quote","Mostre como a autoimagem afeta diretamente o bem-estar e pode ser um obstáculo oculto na jornada de autocuidado."],["quote","Escreva: “A verdade é que muitas vezes o espelho reflete mais nossas inseguranças do que nossa verdadeira força.”"],["callout","Story 3 - Quebra de paradigma:"],["quote","Sugira uma nova forma de olhar para si mesma, focando nas mudanças internas e na saúde, ao invés do julgamento externo."],["quote","Escreva: “O que o espelho deveria mostrar é o quanto você está evoluindo, não as suas imperfeições.”"],["callout","Story 4 - Interação:"],["quote","Caixinha: “O que o espelho te diz hoje? Seja honesta…”"]]},{"category":"engajamento","category_label":"Engajamento","icon":"💬","title":"Opção - E se você tivesse mais tempo?","subcategory":"Interagindo","blocks":[["callout","Story 1 - Gancho:"],["quote","“E se eu te dissesse que a falta de tempo não é o verdadeiro problema?”"],["callout","Story 2 - Reflexão:"],["quote","Explique como muitas vezes o que falta é uma estratégia clara para encaixar hábitos saudáveis na rotina, e não mais tempo."],["quote","Escreva: “A verdade é que, se não houver prioridade, nunca haverá tempo.”"],["callout","Story 3 - Solução prática:"],["quote","Apresente dicas rápidas de como otimizar o tempo e fazer escolhas alimentares inteligentes no dia a dia."],["quote","Escreva: “Você não precisa de mais horas no dia, precisa de mais clareza sobre o que fazer com as que você já tem.”"],["callout","Story 4 - Interação:"],["quote","Qual é o maior ladrão de tempo no seu dia a dia? Responde esse Story!"]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - Café da manhã","subcategory":"Caixinhas de Perguntas","blocks":[["quote","Caixinha de perguntas: Me conta qual foi o seu café da manhã e eu te conto como pode melhorar!"],["callout","Essa sugestão de caixinha de perguntas após você mostrar a sua refeição traz o público pra perto.\nMostrar pra eles que você pode ajudar de maneira prática, impulsiona eles a quererem essa sua ajuda \"gratuita”.\nComo sugestão de foto, poste uma do seu café da manhã."]]},{"category":"engajamento","category_label":"Engajamento","icon":"❓","title":"Opção - Alimento","subcategory":"Outras Ferramentas","blocks":[["quote","Mostre para os seus pacientes que você também segue um plano alimentar saudável!\nInicie seus storys mostrando um café da manhã saudável e aproveite para perguntar se os seus seguidores consomem algum alimento especifico, exemplo:\n- Seu café da manhã foi pão com ovos, mamão com chia. Coloque a enquete na foto do seu café da manhã:\nLegenda: Começando o dia da melhor forma!\n[Enquete] Quem também ama mamão?"]]},{"category":"engajamento","category_label":"Engajamento","icon":"❓","title":"Opção - Volte um Story","subcategory":"Outras Ferramentas","blocks":[["callout","Essa sequência pode ser combinada com qualquer contexto desde que você consiga manter a estrutura nas quantidades aproximadas"],["callout","Você precisará apenas de um tema e dividir ele em, no mínimo, 4 stories, sendo o 1º e o 2º em vídeo e os outros 2 em foto."],["callout","Story 1"],["quote","Você irá introduzir o tema já pensar em uma \"palavra-secreta” próxima do final desse story e que, num primeiro momento, passa desapercebida;"],["callout","Story 2"],["quote","Você continua desenvolvendo sobre o assunto normalmente, como se nada tivesse acontecido;"],["callout","Story 3"],["quote","Nesse Story você faz uma breve conclusão do assunto, mas diz que \"Quer saber quem acompanhou de verdade até ali”"],["callout","Story 4"],["quote","Nesse Story você diz que faz uma pergunta cuja a resposta é a palavra-secreta que você pensou no Story 1 e diz que quem responder no Direct que palavra é essa vai ganhar [Um brinde seu (uma mini consulta, um e-book, lâmina de trocas inteligentes ou algo do tipo)."],["callout","OBS: As ações de \"Voltar um story” e \"Responder no Direct” são consideradas pelo Instagram como as mais relevantes para o engajamento nos Stories, então ao incentivar sua audiência a fazer isso, seus stories vão começar a sempre aparecer na frente no perfil deles, aumentando assim as visualizações, interações e conversões posteriormente."]]},{"category":"engajamento","category_label":"Engajamento","icon":"❓","title":"Opção - Do Feed pro Story","subcategory":"Outras Ferramentas","blocks":[["quote","A ideia é fazer uso de uma publicação (Que será arquivada no dia seguinte) no seu feed no formato de imagem ou reels com uma promessa a ser cumprida nos Stories."],["callout","Ex: Uma imagem no seu feed escrito: Hoje ao longo do dia eu vou dar uma verdadeira aula sobre substituições inteligentes para a sua rotina. Você vai me falar qual refeição é mais difícil pra você e eu vou criar uma listinha com possíveis substituições práticas."]]},{"category":"engajamento","category_label":"Engajamento","icon":"❓","title":"Opção - Interação + Gancho com post","subcategory":"Outras Ferramentas","blocks":[["quote","A ideia aqui é criar uma interação prévia visando levar sua audiência para algum post que você criou."],["quote","Story 1 - Comece o Story com uma pergunta, iniciada com “Na sua opinião…” + um tema que você já destrinchou em alguma publicação no seu feed (Carrossel ou Reels)."],["callout","Ex: Na sua opinião, vale a pena fazer de tudo para emagrecer? E finalize com uma enquete (Sim | Não)"],["quote","Story 2 - Agora faça uma outra enquete aprofundando ainda mais no tema."],["callout","Ex: Para aqueles que disseram sim, esse “de tudo” inclui o uso de remédios alternativos? (Sim | Não)"],["quote","Story 3 - Agora dê o seu posicionamento e no final compartilhe a publicação relacionada com esse assunto."],["callout","Ex: Eu acho que não vale a pena tentar de tudo para emagrecer, na verdade acho que nem precisa. Falei mais sobre esse assunto nesse vídeo aqui (ou carrossel)."]]},{"category":"engajamento","category_label":"Engajamento","icon":"❓","title":"Opção - Especial dia dos Namorados","subcategory":"Outras Ferramentas","blocks":[["callout","Utilize seus stories no dia dos namorados para falar sobre os “Casais que dão Match” dentro da sua especialidade."],["quote","(Ex: Boa noite de sono + Treinos regulares ou Ingestão hídrica + Alimentos com baixo sódio)."],["quote","Crie pelo menos umas 4 sugestões de Match e depois peça para seus seguidores sugerirem outros “casais”."]]},{"category":"engajamento","category_label":"Engajamento","icon":"❓","title":"Opção - Filosofia da Nutri","subcategory":"Outras Ferramentas","blocks":[["quote","Crie uma frase de impacto ou uma pequena lista com os valores que o seu atendimento prega (Ex: Nutrição sem terrorismo) e abaixo coloque a ferramenta de termômetro dos Stories, para que sua audiência possa interagir com o quanto concorda com esses valores."],["callout","A ideia é repetir esse tipo de Stories em algumas vezes ao longo das semanas, para que ele vire um “lema” entre seus seguidores."]]},{"category":"engajamento","category_label":"Engajamento","icon":"❓","title":"Opção - Ative a notificação","subcategory":"Outras Ferramentas","blocks":[["quote","A intenção desse story é preparar o terreno um dia antes para uma sequência mais intensa no dia seguinte."],["callout","Ex: Um dia antes de você postar os stories sobre como funciona sua metodologia, poste uma imagem com uma frase parecida com “Amanhã eu vou revelar pra vocês como dá continuar comendo com prazer mesmo em déficit. Ative as notificações!”"]]},{"category":"engajamento","category_label":"Engajamento","icon":"❓","title":"Opção - Ferramenta Revelar","subcategory":"Outras Ferramentas","blocks":[["callout","Crie uma sequência curta (no máximo 3 stories) focada em falar sobre alguma novidade no seu atendimento, comece falando sobre como essa novidade era aguardada pelos seus seguidores e no final, poste uma foto com ela, porém, utilize a ferramenta “Revelar” nessa novidade para criar um momento de interatividade com a sua audiência."],["quote","Crie uma pergunta como “Quero ver quem consegue adivinhar a novidade de hoje” ou similar para gerar mais curiosidade."],["callout","OBS: Mais uma das ferramentas novas dos Stories do Instagram, o Revelar é a ferramenta perfeita para aumentar ainda mais o alcance e o engajamento dos seus Stories, porque a sua audiência precisa tentar “adivinhar” o que está por trás da imagem embaçada para poder revelar, o que gera 2 momentos de interação que o algoritmo valoriza, responder no Direct e voltar um Story."]]},{"category":"engajamento","category_label":"Engajamento","icon":"❓","title":"Opção - Playlist da Nutri","subcategory":"Outras Ferramentas","blocks":[["text","Utilize a ferramenta “Sua vez música” dos stories para incentivar sua audiência a montar uma playlist (para correr, treinar, estudar…) ou apenas interagir com uma música temática junto com você. Escolha o tema thread antes de postar o Story."],["callout","OBS: O uso das ferramentas mais novas dos Stories no Instagram são amplamente mais bem distribuídas pela plataforma (como uma forma de popularizar o uso do recurso novo) então você pode aproveitar essa situação para aumentar o senso de comunidade junto à sua base de seguidores."]]},{"category":"engajamento","category_label":"Engajamento","icon":"❓","title":"Opção - Use a sua","subcategory":"Outras Ferramentas","blocks":[["quote","Crie uma ação de engajamento com seus seguidores ao utilizar a ferramenta “Use a sua” disponível nos Stories. Utilize alguma situação que reforce sua autoridade dentro do seu nicho."],["callout","Ex: Essa foi minha maior distância em corrida (para nutris esportivas)\nEx2: Isso foi o que comecei a comer depois da minha metodologia (para quem trabalha com seletividade alimentar)"],["quote","A intenção por trás desse tipo de Story é criar uma comunidade que perpetue seus resultados, então foque em algo que seja fácil e confortável da sua audiência compartilhar."]]},{"category":"engajamento","category_label":"Engajamento","icon":"❓","title":"Opção - Pânico pelo conteúdo","subcategory":"Outras Ferramentas","blocks":[["quote","A ideia é gerar uma forte antecipação pelo conteúdo através da curiosidade. Fazendo isso você ganha a atenção e interesse da sua audiência, que vai consumir seu conteúdo com muito mais presença."],["callout","Ex: Um story pela manhã - Eu vou revelar o meu método infalível hoje ás 20h. E depois não poste mais nada até chegar perto do horário combinado, até que você “revele o segredo”."]]},{"category":"engajamento","category_label":"Engajamento","icon":"❓","title":"Opção - Hora do print","subcategory":"Outras Ferramentas","blocks":[["quote","Printar seus stories é uma métrica que o Instagram hoje considera relevante, então crie 1 ou 2 stories com uma introdução sobre um tema do seu nicho e depois, em uma única imagem, escreva uma solução desse problema com o seu ponto de vista e peça para os seus seguidores tirarem um print do Story para consultar depois."],["callout","Ex: 1 Story falando sobre os problemas a longo prazo da seletividade alimentar em crianças até 5 anos e logo em seguida um Story com 5 possíveis soluções que você recomenda e uma frase logo abaixo escrito “PAUSE E PRINT ESSE STORY”"]]},{"category":"engajamento","category_label":"Engajamento","icon":"❓","title":"Opção - Recomende de coração","subcategory":"Outras Ferramentas","blocks":[["quote","Recomende algo para sua audiência. Restaurantes, comidas, filmes, livros, séries ou até mesmo um hobby que você faz, não importa o que, desde que não seja uma #publi e que você explique brevemente o porque você está recomendando isso."],["callout","Ex: Gente, estou quase terminando o livro “A arte da guerra do Sun Tzu” e estou adorando, super recomendo para você que quer aprender sobre o assunto por conta disso e daquilo…"],["callout","Obs: Antes de recomendar, tenha certeza de que você de fato gosta do que está indicando (por isso não recomendamos publis nesse tipo de Story) e leve em consideração o poder aquisitivo do seu público antes de recomendar (Ex: Você atende pacientes de classe C e B e recomenda um produto para classe S+)."]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - A luta silenciosa","subcategory":"Caixinhas de Perguntas","blocks":[["callout","Story 1 - Gancho:"],["quote","“Você já sentiu que está travando uma batalha silenciosa quando se trata da sua alimentação?”"],["callout","Story 2 - Identificação:"],["quote","Explique que muitas pessoas lutam para manter uma alimentação saudável, mas nem sempre conseguem falar sobre as dificuldades."],["quote","Escreva: “Segure para entender como você não está sozinha...”"],["callout","Story 3 - Reconhecimento da Urgência Oculta:"],["quote","Aborde como a culpa e a frustração podem ser barreiras invisíveis para muitas mulheres, impedindo-as de atingir seus objetivos de saúde."],["quote","Escreva: “Você também já sentiu que algo invisível te impede de seguir em frente?”"],["callout","Story 4 - Interação:"],["quote","Caixinha: “O que te impede de continuar firme na sua alimentação? Vamos conversar.”"]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - Você decide","subcategory":"Caixinhas de Perguntas","blocks":[["callout","Story 1 - Gancho"],["quote","Insira uma enquete para que a sua audiência decida o conteúdo dos stories do dia"],["quote","Ex: Enquete: Você prefere que eu... (abra uma caixinha de perguntas) ou (…te mostre receitas de lanches saudáveis)"],["callout","Story 2 - Desenvolvimento + Promessa"],["quote","Independente da resposta vencedora, diga que você estava pensando em compartilhar algo \"exclusivo\"."],["quote","Ex: Estava pensando em liberar 5 vagas para um parecer gratuito. Libero? + [enquete SIM | NÃO]"],["callout","Story 3 - O “preço”"],["quote","Baixe o story anterior, pinte com o pincel marcador para ficar com fundo transparente e escreva o \"preço\" em engajamento para que você libere."],["quote","Ex: Então para que eu libere essas 5 vagas eu preciso que esse story atinja 50 reações."],["callout","Story 4 - Um “Gostinho”"],["quote","Comece a apresentar o conteúdo de valor que a sua audiência escolheu na enquete do primeiro story."],["text","Ex: Agora de volta ao que vocês pediram (Se a resposta mais votada for caixinha, abra ela, se forem as receitas, comece a listar)"],["callout","Story 5 - Meta Batida"],["quote","Ao baterem a meta, você parabeniza o \"time\" porque foi graças a um trabalho em conjunto que você vai liberar o presente."],["quote","Ex: Vocês são rápidas, hein?! Pisquei e já chegamos nas 50 reações, então vamos lá, como prometido, para garantir a sua vaga você precisa (Ação para conseguir o que você prometeu)."]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - Sobre Collabs","subcategory":"Caixinhas de Perguntas","blocks":[["quote","A ideia por trás dessa sequência é criar uma rede de perfis interligados que vão reforçar mutuamente a autoridade e também para mostrar que você possui um bom relacionamento com outros segmentos dentro da área da saúde (e até outras nutris)"],["callout","Story 1 - Gancho"],["quote","Tenho uma novidade... Estou neste exato momento finalizando um projeto secreto que passamos os últimos (X meses) criando.."],["callout","Story 2 - Desenvolvimento"],["quote","Use uma foto de fundo pintada com pincel, mostrando um pouco do que se trata."],["quote","Ex: Me reuni com (Cite as profissões ou especializações das outras pessoas envolvidas) para preparar uma novidade que vai te ajudar ainda mais a (Objetivo principal dessa collab)"],["callout","Story 3 - Motivações"],["quote","Fale sobre o que você buscou transmitir e proporcionar com essa parceria"],["quote","Ex: A ideia é ter um acompanhamento ainda mais completo para você."],["callout","Story 4 - CTA"],["quote","Caixinha: Alguém arrisca o que vem por aí?"]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - Pesquisa de dores com a audiência","subcategory":"Caixinhas de Perguntas","blocks":[["quote","Crie uma caixinha para fazer uma pesquisa entre os seus seguidores afim de entender melhor quais as maiores dores ou desafios que eles podem estar enfrentando."],["callout","Ex1: Me conta aqui o por que você ainda não faz parte do meu acompanhamento nutricional?\nEx2: Qual a sua maior dificuldade hoje para ter uma alimentação saudável?"],["callout","Obs: As respostas dessas caixinhas servem como dados para possíveis posts no futuro, principalmente as dores que mais se repetirem."]]},{"category":"engajamento","category_label":"Engajamento","icon":"📫","title":"Opção - O sabotador silencioso","subcategory":"Caixinhas de Perguntas","blocks":[["callout","Story 1 - Gancho:"],["quote","“Você sabia que o maior sabotador da sua saúde pode estar mais perto do que você imagina?”"],["callout","Story 2 - Reflexão:"],["quote","Fale sobre a autossabotagem, abordando como muitas vezes as desculpas e os hábitos antigos se tornam os maiores inimigos da mudança."],["quote","Escreva: “E o pior de tudo… ele mora dentro de você.”"],["callout","Story 3 - Chamada à ação emocional:"],["quote","Incentive a audiência a identificar os padrões de comportamento que a impedem de seguir com uma alimentação equilibrada."],["quote","Escreva: “Reconhecer esses sabotadores é o primeiro passo para superá-los.”"],["callout","Story 4 - Interação:"],["quote","Caixinha: “Qual hábito você sente que está te sabotando? Vamos superar juntas!”"]]},{"category":"vendas","category_label":"Vendas","icon":"💝","title":"Opção 01 - Zona de conforto","subcategory":"Com prova social","blocks":[["quote","STORY 01 (Isca)"],["callout","Todo mundo vive me perguntando isso no direct…"],["quote","STORY 02 (Lançar a dúvida)"],["callout","“Como eu faço para ter resultados mais rápidos?”\nEssa também é uma dúvida sua?\n[Enquete] Com certeza | Sempre quis saber"],["quote","STORY 03 (Planos)"],["callout","Eu sei como você se sente.\nPor mais que saiba o que precisa fazer, muitas vezes você procura a solução mais rápida e mais fácil."],["quote","STORY 04 (Frustração)"],["callout","Isso te deixa frustrada, porque entra ano e sai ano e você ainda não (colocar o objetivo do seu público aqui. Ex: ainda não emagreceu).\nVocê tem os mesmos planos mas nunca se sente capaz de dar o primeiro passo para que isso aconteça, principalmente por acreditar que é difícil demais.\nFalta motivação, você se sente em dúvida, e mesmo quando decide realmente ir fundo, sempre deixa os pensamentos ruins tomarem conta e acaba acreditando que aquilo não ia dar certo mesmo!"],["quote","STORY 05 (Mundo)"],["callout","Você não é a única pessoa a passar por isso, não tem nada de errado com você e isso não significa que os seus objetivos nunca vão se realizar!\nO que você precisa é de um plano e de um direcionamento, específico para você, de acordo com seu objetivo e suas individualidades."],["quote","STORY 06 (Transição para venda)"],["callout","O que muita gente faz é ficar se questionando por que não é determinada igual a fulana, por que não é constante igual a fulana.\nE isso não te leva a lugar nenhum! Cada pessoa é uma pessoa, possui características e motivações diferentes.\nEntender quais são as suas dificuldades vai fazer você descobrir como atingir todo seu potencial pra finalmente conseguir sair da zona de conforto e ver seus objetivos se concretizando!\nE é exatamente isso que a gente faz durante a minha consulta!"],["quote","STORY 07 (Depoimento/Venda)"],["callout","[Colocar feedback] Minhas pacientes saíram da zona de conforto e já estão vendo os resultados!\n[Colocar link para o WhatsApp] Título do link: QUERO SABER MAIS SOBRE A CONSULTA"]]},{"category":"vendas","category_label":"Vendas","icon":"💝","title":"Opção 02 - Ciclos de dietas","subcategory":"Com prova social","blocks":[["quote","STORY 01 (Isca)"],["callout","Tenho certeza que isso te deixa muito mal!"],["quote","STORY 02 (Lançar a dificuldade)"],["callout","Você que já foi em algum nutricionista, ele entregou um plano alimentar e você não conseguiu seguir."],["quote","STORY 03 (Pergunta de identificação)"],["callout","Isso já aconteceu com você?\n[Enquete] Já, sim! | Nem voltei pra segunda consulta"],["quote","STORY 04 (Ciclos)"],["callout","Passa a primeira semana e você segue o que está escrito no papel, na segunda semana você só faz o que está prescrito pro almoço e pro jantar…\nNa terceira semana você nem lembra mais a cor da dieta.\nVocê vive em um ciclo infinito de começar uma dieta, não dar certo e se sabotar voltando a comer como antes.\nVocê se sente estagnada enquanto olha no instagram tantas pessoas conseguindo fazer o que você acabou de desistir.\nE você pensa: \"Todo mundo consegue menos eu\"!"],["quote","STORY 05 (Mundo)"],["callout","Acontece que se comparar é a pior coisa, porque você não é igual as outras pessoas!\nCada um tem sua história, crença, experiências e aprendizados diferentes."],["quote","STORY 06 (Transição para venda)"],["callout","Por isso que a maneira mais eficiente de conseguir mudar a sua realidade é entender que alimentação e qualidade de vida andam juntos e muitos outros fatores precisam ser implementados (além de um plano alimentar) a seu favor pra fazer você alcançar o que deseja.\nQue é o que a gente faz no meu acompanhamento nutricional."],["quote","STORY 07 (Depoimento/Venda)"],["callout","[Colocar feedback] Foi assim que minhas pacientes conseguiram atingir seus objetivos sem sofrimento e sem desistir por falta de motivação.\n[Colocar link para o WhatsApp] Título do link: QUERO SABER MAIS SOBRE A CONSULTA"]]},{"category":"vendas","category_label":"Vendas","icon":"🗣️","title":"Opção 01 - Procrastinação","subcategory":"Através de Storytelling","blocks":[["quote","STORY 01 (Lançar a dificuldade/Isca)"],["callout","Vencer a procrastinação de planejar as refeições.\nEssa é a maior dificuldade das pessoas!"],["quote","STORY 02 (Pergunta de identificação)"],["callout","Você também tem essa dificuldade?\n[Enquete] Sim! | Com certeza!"],["quote","STORY 03 (Motivação)"],["callout","Daqui a pouco se inicia mais um mês, e você irá traçar novas metas.\nRealidade: o mês começa e você percebe que as mesmas dificuldades batem à porta, as mesmas desculpas, e você se vê mais uma vez não conseguindo cumprir aquilo que você prometeu."],["quote","STORY 04 (Transição para venda)"],["callout","Acontece que não adianta você acreditar que será diferente sendo que você continua fazendo as mesmas coisas, sendo exatamente a mesma pessoa.\nResultados diferentes acontecem quando nós nos tornamos pessoas diferentes, capazes de gerar esses resultados!\nE esse processo começa quando nós temos um plano pra seguir e isso faz com que a gente use todo nosso potencial."],["quote","STORY 05 (Venda)"],["callout","É isso que eu ensino para as minhas pacientes: como vencer a desmotivação e como conseguir planejar melhor a alimentação da semana, com antecedência, para evitar sair do plano.\nE o melhor: sempre durante a consulta eu procuro entender a rotina de cada paciente, assim consigo adaptar a alimentação dela de forma que seja mais prática.\nSe você também vive procrastinando e não consegue mudar essa realidade, clica no link que eu te ajudo!\n[Colocar link para o WhatsApp] Título do link: QUERO SABER MAIS!"]]},{"category":"vendas","category_label":"Vendas","icon":"🗣️","title":"Opção 02 - Insatisfação","subcategory":"Através de Storytelling","blocks":[["quote","STORY 01 (Isca)"],["callout","Sempre recebo no meu consultório novas pacientes que dizem isso…"],["quote","STORY 02 (Lançar a dificuldade)"],["callout","\"Eu não estou satisfeita com meus resultados, não consigo sair do lugar e não sei o que fazer pra mudar isso, por isso quis me consultar com você!\""],["quote","STORY 03 (Frustração)"],["callout","Acontece que a maioria das pessoas acha que já tentou de tudo e mesmo assim não consegue sair do lugar.\nJá tentou todo tipo de dieta da internet, já ficou muito tempo na academia, já tentou milagres que viu no instagram e nada funcionou.\nE logo depois vem a frustração de achar que é a única pessoa que não consegue ter resultados. Para piorar, a última coisa que fazem é procurar um profissional para orientar de maneira correta."],["quote","STORY 04 (Entender o paciente)"],["callout","Acontece que cada pessoa é única e o que funciona para uma pessoa pode não funcionar para a outra. Além do mais, o que se vê nas redes sociais não é nem 1% da verdade por trás.\nDietas restritivas, exercícios exagerados, e outras práticas sem fundamentos podem dificultar mais ainda os seus resultados."],["quote","STORY 05 (Venda)"],["callout","Apenas um profissional qualificado pode te ajudar a sair dessa inércia de forma saudável.\nPor isso que meu método de atendimento contribui para resultados em um curto espaço de tempo, principalmente para pessoas que já tentaram mudar por conta própria e nada funcionava!\n[Colocar link para o WhatsApp] Título do link: É DISSO QUE EU PRECISO!"]]},{"category":"vendas","category_label":"Vendas","icon":"🗣️","title":"Opção 03 - Se priorize","subcategory":"Através de Storytelling","blocks":[["quote","STORY 01 (Isca)"],["callout","Esse é o mal de muita gente!"],["quote","STORY 02 (Lançar a dificuldade)"],["callout","Consegue pensar em tudo, em todo mundo, mas sempre se coloca em último lugar!\nVocê também é assim?\n[Enquete] Eu sou | Desse jeito"],["quote","STORY 03 (Pensa em todo mundo)"],["callout","A gente tenta dar conta de tudo. Aí vem as demandas dos nossos filhos, do marido, da casa, às vezes dos nossos pais, do trabalho, até mesmo de algumas amigas."],["quote","STORY 04 (Limites)"],["callout","Não tem problema nenhum ajudar outras pessoas. A questão é quando isso começa a passar do ponto e você fica dizendo sim para tudo, menos pra você!\nVocê se coloca sempre em último lugar e esse lugar nunca chega, já que o tempo é curto e você nunca consegue chegar na sua vez!"],["quote","STORY 05 (Transição para a venda)"],["callout","A verdade é que não tem como você chegar onde você deseja, alcançar resultados e conquistas quando você é a última pessoa da fila.\nSe você sempre usar o “eu não tenho tempo pra isso” vai continuar se sentindo mais frustrada e insatisfeita.\nE, grande parte das vezes você não consegue fazer isso sozinha!\nE é exatamente por isso que o meu atendimento prioriza você, pra que você consiga também se priorizar e alcançar seus objetivos de forma saudável!"],["quote","STORY 06 (Venda)"],["callout","Se você também está desanimada com seus resultados, está sempre se colocando em último lugar, clica aqui nesse link para saber se o meu acompanhamento é pra você!\n[Colocar link para o WhatsApp] Título do link: QUERO SABER MAIS SOBRE A CONSULTA"]]},{"category":"vendas","category_label":"Vendas","icon":"🗣️","title":"Opção 04 - Mais tempo","subcategory":"Através de Storytelling","blocks":[["quote","STORY 01 (Isca)"],["callout","É isso que todo mundo busca e quase ninguém alcança!"],["quote","STORY 02 (Lançar o desejo)"],["callout","As pessoas querem mais tempo para si mesmas!"],["quote","STORY 03 (Dia a dia)"],["callout","A verdade é que o dia a dia de todo mundo está tão corrido, que você sente que o dia precisava ter mais de 24h para poder conseguir fazer tudo que precisa.\nE eu sei que você diz que não tem tempo de seguir um plano alimentar, porque, para você, isso parece muito trabalhoso."],["quote","STORY 04 (Tempo)"],["callout","Ter tempo para você mesma, seus projetos, seus cuidados, fazer coisas que são necessárias pra sua saúde no geral, nem passa pela sua cabeça.\nO problema é que isso vai minando a sua energia!"],["quote","STORY 05 (Transição para venda)"],["callout","Mas não adianta se deixar pra depois, sua saúde precisa de atenção agora!\nDurante a minha consulta eu falo exatamente sobre isso!"],["quote","STORY 06 (Venda)"],["callout","E melhor do que só falar sobre isso, eu te ajudo a tornar esse processo mais leve e mais prático!\nSe você quer saber como, acesse o link:\n[Colocar link para o WhatsApp] Título do link: QUERO SABER MAIS SOBRE A CONSULTA"]]},{"category":"vendas","category_label":"Vendas","icon":"💝","title":"Opção 03 - Valorize o que diferencia seu serviço","subcategory":"Com prova social","blocks":[["quote","Escolha pelo menos 1 ou 2 diferenciais no seu atendimento e peça para seus pacientes gravarem vídeos falando sobre esses pontos, de forma que reforce o impacto positivo causado pela sua abordagem."]]},{"category":"vendas","category_label":"Vendas","icon":"🗣️","title":"Opção 05 - Emagrecer","subcategory":"Através de Storytelling","blocks":[["quote","STORY 01 (Isca)"],["callout","Essa é uma vontade da grande maioria das pacientes que me procuram, sem dúvida nenhuma!"],["quote","STORY 02 (Lançar o desejo)"],["callout","Elas sempre estão querendo emagrecer, o problema é que, muitas vezes, não sabem como."],["quote","STORY 03 (Pergunta de identificação)"],["callout","Você também está buscando isso?\n[Enquete] Com certeza | Estou tentando"],["quote","STORY 04 (Desafio)"],["callout","São muitas as pessoas que vivem buscando por uma alimentação mais saudável, mais equilibrada, querem perder peso, olharem no espelho e se sentirem satisfeitas e felizes com o corpo que tem.\nE isso é um grande desafio, já que o tempo é curto, a motivação é pouca, os desafios parecem ser muitos."],["quote","STORY 05 (Transição para venda)"],["callout","É preciso um esforço maior no começo sim, porque é quando nós estamos mudando hábitos que nos acompanharam por um tempo muito longo.\nNão vai ser da noite para o dia, é claro que você vai escorregar uma vez ou outra, mas quanto mais ajuda e orientações você tiver, menor vai ser a chance de não conseguir."],["quote","STORY 06 (Venda)"],["callout","E não, você não precisa deixar de comer tudo o que gosta ou passar fome. Um plano alimentar bem calculado será essencial nesse processo.\nSe você quer saber como, acesse o link:\n[Colocar link para o WhatsApp] Título do link: QUERO SABER MAIS SOBRE A CONSULTA"]]},{"category":"vendas","category_label":"Vendas","icon":"🗣️","title":"Opção 06 - Um grande erro","subcategory":"Através de Storytelling","blocks":[["quote","Comece o story comentando um grande erro que seus pacientes cometem antes dos seus atendimentos e como sua metodologia ajuda eles a obterem o resultado que você promete."],["callout","No final da sequência, faça uma chamada para saber mais sobre o seu atendimento através do seu site ou WhatsApp."]]},{"category":"vendas","category_label":"Vendas","icon":"💝","title":"Opção 04 - Indisposição","subcategory":"Com prova social","blocks":[["quote","STORY 01 (Isca)"],["callout","Essa é a grande reclamação de muita gente…"],["quote","STORY 02 (Lançar a dificuldade)"],["callout","Vive sempre cansada, sem energia e disposição."],["quote","STORY 03 (Desafio)"],["callout","Mas, quando você está no seu limite, sem energia pra qualquer coisa, como é que você vai encaixar ainda uma atividade física na sua rotina?\nE, eu te digo, o começo é a parte mais difícil mesmo."],["quote","STORY 04 (Solução)"],["callout","Mas, o melhor de tudo, é que a alimentação também te ajuda a dar o primeiro passo.\nDurante a minha consulta, eu sempre investigo o motivo real do cansaço, que pode estar relacionado à diversos fatores, como a falta de micronutrientes.\nIsso também será essencial pra que você consiga começar."],["quote","STORY 05 (Depoimento/Venda)"],["callout","[Colocar feedback] Minhas pacientes são prova viva disso!\nEu te ajudo! Acesse o link para juntas conseguirmos melhorar a sua energia e disposição diariamente!\n[Colocar link para o WhatsApp] Título do link: PRECISO DISSO!"]]},{"category":"vendas","category_label":"Vendas","icon":"💝","title":"Opção 05 - Conte uma história","subcategory":"Com prova social","blocks":[["quote","Conte uma história (pode ser fictícia ou não) com uma dor real dos seus pacientes e ampliando ainda mais o valor do seu método/atendimento como a solução/conclusão dessa história."]]},{"category":"vendas","category_label":"Vendas","icon":"💝","title":"Opção 06 - Orgulho da Nutri","subcategory":"Com prova social","blocks":[["callout","Selecione alguns pacientes com mudanças significativas para começar os stories falando das suas histórias afim de inspirar os demais seguidores."],["quote","No final, crie uma oferta para aqueles que querem obter “os mesmos resultados”."]]},{"category":"vendas","category_label":"Vendas","icon":"💝","title":"Opção 07 - \"Transformações Surpreendentes\"","subcategory":"Com prova social","blocks":[["callout","Story 1 - Gancho"],["quote","Pequenas mudanças podem levar a grandes transformações! 💫"],["callout","Story 2 - Contexto"],["text","\"Você já se surpreendeu com o poder de pequenas ações?\""],["text","[Enquete] Sim | Não"],["callout","Story 3 - Contexto"],["quote","Às vezes, subestimamos o impacto de pequenas escolhas diárias."],["callout","Story 4 - Contexto"],["quote","Pequenas mudanças na alimentação podem transformar sua saúde e bem-estar. Como por exemplo: (sugira uma modificação simples como trocar tapioca por pão francês em dietas de emagrecimento) 🍏"],["callout","Story 5 - Contexto"],["quote","Essa mudança foi só uma das que fizeram a [Nome Fictício], conseguir atingir [Objetivo do seu atendimento]."],["callout","Story 6 - Virada"],["quote","Quer saber como pequenas ações podem transformar sua saúde? Meu atendimento com certeza vai te ajudar!"],["callout","Story 7 - CTA"],["quote","[Feedback de um paciente real]"],["text","[Link para WhatsApp] Saiba mais sobre meu atendimento!"]]},{"category":"vendas","category_label":"Vendas","icon":"💝","title":"Opção 08 - Metas realistas","subcategory":"Com prova social","blocks":[["callout","STORY 01 (Isca + Dúvida)"],["quote","Você tem metas realistas para sua saúde ou só está mirando na Blogueirinha Fitness que você segue? Me responde aqui no Direct!"],["callout","STORY 03 (Informação)"],["quote","Metas realistas são o primeiro passo para qualquer tipo de mudança duradoura, a vida no Instagram as vezes pode parecer muito bonita, até demais eu diria!"],["callout","STORY 04 (Benefícios)"],["quote","Mas quando você trabalha com metas mais realistas e consegue alcança-las, ganha confiança e isso te motiva a continuar progredindo."],["callout","STORY 05 (Mundo)"],["quote","Não é sobre a barriga mais sequinha, não é uma competição de quem tem a melhor foto de biquini, é sobre progresso constante e sustentável."],["callout","STORY 06 (Transição para venda)"],["quote","Nas minhas consultas, eu te ajudo a estabelecer metas realistas e alcançáveis que se encaixem no seu estilo de vida, sem exageros ou radialismo."],["callout","STORY 07 (Depoimento/Venda)"],["quote","[Colocar feedback] Como no caso da [Nome da paciente]! [Colocar link para o WhatsApp] Título do link: QUERO DEFINIR MINHAS METAS!"]]},{"category":"vendas","category_label":"Vendas","icon":"💝","title":"Opção 09 - Suporte contínuo","subcategory":"Com prova social","blocks":[["callout","STORY 01 (Isca):"],["quote","Você se sente sozinha na sua jornada de emagrecimento?"],["callout","STORY 02 (Lançar a dúvida)"],["quote","“Como ter suporte contínuo durante a jornada de emagrecimento?” Você também se sente assim? [Enquete] Sim | Sempre"],["callout","STORY 03 (Informação)"],["quote","Ter um suporte contínuo é essencial para manter a motivação e alcançar os resultados desejados."],["callout","STORY 04 (Benefícios)"],["quote","Com acompanhamento profissional, você recebe orientação e apoio necessário para superar desafios."],["callout","STORY 05 (Mundo)"],["quote","Não precisa fazer isso sozinha. Estamos aqui para te ajudar a cada passo do caminho."],["callout","STORY 06 (Transição para venda)"],["quote","Minhas consultas oferecem suporte contínuo para que você se sinta acompanhada e motivada durante toda a jornada."],["callout","STORY 07 (Depoimento/Venda)"],["quote","[Colocar feedback] Minhas pacientes nunca mais se sentiram sozinhas e alcançaram seus objetivos com meu suporte. [Colocar link para o WhatsApp] Título do link: QUERO FAZER PARTE + [NOME DA SUA COMUNIDADE/GRUPO/APELIDO PARA SUAS SEGUIDORAS]"]]},{"category":"vendas","category_label":"Vendas","icon":"💝","title":"Opção 10 - O foco é na saúde","subcategory":"Com prova social","blocks":[["callout","STORY 01 (Isca)"],["quote","A sua saúde está em primeiro lugar?"],["callout","STORY 02 (Lançar a dúvida)"],["quote","“Como posso priorizar minha saúde em meio à correria do dia a dia?” Você também se sente assim? [Enquete] Sim | Sempre"],["callout","STORY 03 (Informação)"],["quote","Priorizar a saúde não é sobre fazer grandes mudanças de uma vez, mas sim pequenos ajustes que fazem a diferença."],["callout","STORY 04 (Benefícios)"],["quote","Pequenas mudanças na alimentação podem melhorar significativamente sua qualidade de vida."],["callout","STORY 05 (Mundo)"],["quote","Não espere até sentir os efeitos negativos da má alimentação. Cuide-se agora!"],["callout","STORY 06 (Transição para venda)"],["quote","Minhas consultas ajudam você a encontrar maneiras práticas de cuidar da sua saúde, mesmo com a rotina agitada."],["callout","STORY 07 (Depoimento/Venda)"],["quote","[Colocar feedback] Com meu acompanhamento, muitas pacientes conseguiram priorizar sua saúde e ver melhorias significativas. [Colocar link para o WhatsApp] Título do link: MINHA SAÚDE VEM PRIMEIRO!"]]},{"category":"vendas","category_label":"Vendas","icon":"🗣️","title":"Opção 07 - Oferta contextualizada","subcategory":"Através de Storytelling","blocks":[["quote","Crie uma oferta focada nos benefícios da sua consulta em uma sequência de 3 a 4 stories separando um benefício por story, no final crie uma oferta com um “bônus” que aumente a percepção de valor da sua consulta."],["callout","Não baixe o seu preço, incremente com algum diferencial menor (Brindes, material customizado ou algo do tipo)."]]},{"category":"vendas","category_label":"Vendas","icon":"🗣️","title":"Opção 08 - Nutrição e economia","subcategory":"Através de Storytelling","blocks":[["callout","Story 1 - Gancho"],["quote","Uma das principais reclamações de quem não se consulta com uma nutricionista é que “fazer dieta é muito caro”"],["callout","Story 2 - Contexto"],["quote","[Comparações de preços dos Combos de Fast Food X Um prato balanceado]"],["callout","Story 3 - Contexto"],["quote","Muitas vezes essa percepção de que fazer dieta é caro, tem a ver com os valores de algumas suplementações como Whey Protein e Creatina (Ná média de R$ 150,00), mas você precisa entender que:"],["callout","Story 4 - Contexto"],["quote","Exceto alguns casos específicos, você não precisa de um monte de suplementos para conseguir ter uma alimentação mais saudável e eu te garanto que se você separasse metade do que gasta com o iFood no final de semana"],["callout","Story 5 - Virada"],["quote","Conseguiria montar uma dieta bem interessante e ainda sobrar uma graninha pra comprar um açaí!"],["callout","Story 6 - CTA"],["quote","Conseguir atingir seus objetivos nutricionais sem abrir mão de comer o que gosta é um dos pilares do meu atendimento"],["quote","Que você consegue saber mais clicando nesse link!"]]},{"category":"vendas","category_label":"Vendas","icon":"🗣️","title":"Opção 09 - Receita/Dica secreta da Nutri","subcategory":"Através de Storytelling","blocks":[["callout","Essa sequência tem a função de auxiliar o seu potencial paciente com um tutorial/dica que de fato melhore a vida dele, porém tem que ser algo que faça parte do seu atendimento, quanto mais específico/exclusivo for, mais importante ele vai se sentir."],["quote","Você vai iniciar a sequência com uma frase de impacto como “Hoje eu vou te ajudar a resolver o problema X com um segredo que só meus pacientes sabem”, dê sequência com a solução específica para esse problema (utilize quantos stories forem necessários, se for uma “dor” comum da sua audiência, eles permanecerão) e depois feche a sequência com um CTA do tipo:"],["quote","“Façam e depois me agradeçam, e se você quiser ter acesso a esses segredos e vários outros, acesse o link abaixo e seja meu paciente”"],["callout","OBS: Essa sequência pode ser repetida de tempos em tempos com a mesma solução (Podem chegar novos seguidores ou os antigos perderam esse dia que você postou) ou outra de mesmo impacto. Se tiver feedbacks de outros seguidores que fizeram e aprovaram a dica/receita, poste antes de fazer a oferta para o seu atendimento."]]},{"category":"vendas","category_label":"Vendas","icon":"🗣️","title":"Opção 10 - Alta Performance","subcategory":"Através de Storytelling","blocks":[["callout","Story 1 - Gancho"],["quote","Você é ou pretende ser um atleta de alta performance? (Aqui você pode ser mais específica caso já atenda algum nicho em particular)\nEnquete: Sim sou! | Não, mas quero ser | Não pretendo competir"],["callout","Story 2 - Contexto"],["quote","Preciso falar sério com você que não é e não deseja ser um atleta de alta performance"],["callout","Story 3 - Contexto"],["quote","SE VOCÊ NÃO É E NEM QUER SER, PARE DE QUERER TREINAR/COMER COMO UM ATLETA DE ALTA PERFORMANCE"],["callout","Story 4 - Contexto"],["quote","Existe uma relação direta entre pessoas que buscam dietas e soluções que são aplicadas para o alto rendimento sem terem essa finalidade na vida"],["callout","Story 5 - Virada"],["text","O básico funciona e funciona muito bem!"],["quote","Se você “só” quer aumentar sua qualidade de vida, jogar seu futebol ou andar de bike no final de semana, você não precisa partir para estratégias mirabolantes ou soluções extremas"],["callout","Story 6 - Virada"],["quote","Todos os meus pacientes passam por uma avaliação que leva em consideração muito mais do que o que eles gostam de comer, mas também seus objetivos na vida, sua rotina e tudo mais que for pertinente e só então eu monto um planejamento alimentar que considera todos esses pontos"],["callout","Story 7 - CTA"],["quote","Clique nesse link e saiba mais sobre o meu atendimento"]]},{"category":"vendas","category_label":"Vendas","icon":"💝","title":"Opção 11 - Sobre vencer desafios","subcategory":"Com prova social","blocks":[["callout","STORY 01 (Isca)"],["quote","O maior desafio na sua dieta é a constância?"],["callout","STORY 02 (Lançar a dificuldade)"],["quote","Muitas vezes começamos com tudo, mas logo perdemos o foco. Isso já aconteceu com você? [Enquete] Sim | Demais"],["callout","STORY 03 (Empatia)"],["quote","Eu entendo essa luta. A vida é corrida e manter uma rotina alimentar pode parecer impossível."],["callout","STORY 04 (Soluções)"],["quote","Mas não precisa ser assim. Com um plano personalizado e suporte contínuo, você pode superar esses obstáculos."],["callout","STORY 05 (Mundo)"],["quote","Não é sobre ser perfeito, mas sobre ser consistente e encontrar o equilíbrio."],["callout","STORY 06 (Transição para venda)"],["quote","Minhas consultas focam em te dar o suporte necessário para que você mantenha a constância e alcance seus objetivos."],["callout","STORY 07 (Depoimento/Venda)"],["quote","Colocar feedback] Com meu acompanhamento, muitas pacientes conseguiram vencer os desafios e manter a dieta. [Colocar link para o WhatsApp] Título do link: QUERO SUPERAR MEUS DESAFIOS"]]},{"category":"vendas","category_label":"Vendas","icon":"💝","title":"Opção 12 - Alimentando as emoções","subcategory":"Com prova social","blocks":[["callout","STORY 01 (Isca)"],["quote","Suas emoções influenciam sua alimentação?"],["callout","STORY 02 (Lançar a dúvida)"],["quote","“Como controlar a alimentação emocional?” Você já passou por isso? [Enquete] Sim | Quero saber mais"],["callout","STORY 03 (Informação)"],["quote","A alimentação emocional é quando comemos para lidar com sentimentos ao invés de fome."],["callout","STORY 04 (Benefícios)"],["quote","Identificar os gatilhos emocionais e aprender a controlá-los pode transformar sua relação com a comida."],["callout","STORY 05 (Mundo)"],["quote","Não é sobre eliminar todos os alimentos que você gosta, mas sim sobre encontrar equilíbrio e alternativas saudáveis."],["callout","STORY 06 (Transição para venda)"],["quote","Com o meu acompanhamento, você aprende a identificar esses gatilhos e lidar melhor com essas situações sem acabar recorrendo à comida como uma fuga."],["callout","STORY 07 (Depoimento/Venda)"],["quote","[Colocar feedback] Tenha uma relação mais saudável com a comida assim como elas. [Colocar link para o WhatsApp] Título do link: QUERO CONTROLAR MINHAS EMOÇÕES"]]},{"category":"vendas","category_label":"Vendas","icon":"💝","title":"Opção 13 - Alimentação Consciente","subcategory":"Com prova social","blocks":[["callout","STORY 01 (Isca)"],["quote","Você sabe o que está colocando no seu prato?"],["callout","STORY 02 (Lançar a dúvida)"],["quote","Mais especificamente, você come com consciência? [Enquete] Sim | Quero saber mais"],["callout","STORY 03 (Informação)"],["quote","Alimentação consciente é sobre entender os benefícios dos alimentos que você consome e como eles impactam sua saúde."],["callout","STORY 04 (Benefícios)"],["quote","Com uma alimentação consciente, você pode melhorar sua energia, humor e até mesmo a qualidade do seu sono."],["callout","STORY 05 (Mundo)"],["quote","Não é só sobre comer menos, mas sim sobre comer melhor. Cada escolha conta!"],["callout","STORY 06 (Transição para venda)"],["quote","Nas minhas consultas, você aprende a fazer escolhas mais saudáveis e adequadas para suas necessidades e rotina."],["callout","STORY 07 (Depoimento/Venda)"],["quote","[Colocar feedback] Minhas pacientes transformaram suas vidas através da alimentação consciente! [Colocar link para o WhatsApp] Título do link: QUERO APRENDER MAIS"]]},{"category":"vendas","category_label":"Vendas","icon":"📫","title":"Opção 01 - Caixinha da dúvida","subcategory":"Através de caixinhas","blocks":[["quote","Crie uma caixinha com: Você manda uma dúvida e meu método responde por mim!"],["callout","Utilize a caixinha pra aumentar ainda mais o valor por trás do seu atendimento respondendo as principais dúvidas dos seus seguidores com a sua metodologia."]]},{"category":"vendas","category_label":"Vendas","icon":"📫","title":"Opção 02 - Caixinha do Mito X Verdade","subcategory":"Através de caixinhas","blocks":[["quote","Para explorar as principais dúvidas dos seus pacientes + CTA no final das caixinhas"],["callout","(Caso precise exemplificar uma dúvida muito específica, você mesma pode criar uma pergunta fictícia para ajudar na sequência)."]]},{"category":"vendas","category_label":"Vendas","icon":"📫","title":"Opção 03 - Caixinha do Contra","subcategory":"Através de caixinhas","blocks":[["callout","Crie uma caixinha com título “Por que você não se consulta com uma Nutri hoje?”"],["quote","Nela, aborde as perguntas das principais objeções dos seus pacientes e responda de maneira objetiva, porém reforçando o seu atendimento como uma principal solução dessas objeções."],["quote","Aproveite as demais objeções para reforçar a percepção de valor por trás do seu atendimento e no final das perguntas, faça uma oferta para o seu atendimento."]]},{"category":"vendas","category_label":"Vendas","icon":"🗣️","title":"Opção 11 - Nutrição e Insônia","subcategory":"Através de Storytelling","blocks":[["callout","Story 1 - Gancho"],["text","Enquete: Muito! | Até consigo desenvolver"],["quote","Não vou mentir pra você, se eu dormir mal, meu dia não rende! Com você é assim também?"],["callout","Story 2 - Contexto"],["quote","Que o sono é um dos pilares para uma vida mais saudável eu sei que você já deve ter ouvido falar, mas sabia que o que você come também pode afetar a qualidade do seu sono?"],["callout","Story 3 - Contexto"],["quote","Se você parar pra pensar, não vai demorar muito pra se lembrar daquele dia que você acabou comendo demais, ficou estufada e acabou dormindo mal porque ficava rolando de um lado para o outro"],["callout","Story 4 - Contexto"],["quote","Mesmo quando falamos de alimentos mais \"Saudáveis” basta você colocar a quantidade errada na hora errada que você não terá uma boa noite de sono, o que não te dará energia pra fazer tudo que você precisa no dia seguinte e aí já era"],["callout","Story 5 - Virada"],["quote","Por isso que eu converso sempre com os meus pacientes, para entender como funciona a rotina deles e conseguir montar um plano alimentar que não prejudique os outros pilares mesmo que sem querer."],["callout","Story 6 - CTA"],["quote","Quer saber se sua alimentação pode estar afetando seu sono? Clica no link abaixo e agende sua consulta."]]},{"category":"vendas","category_label":"Vendas","icon":"🗣️","title":"Opção 12 - Autoestima e Confiança","subcategory":"Através de Storytelling","blocks":[["callout","Story 1 - Gancho"],["quote","Comer bem não é só sobre saúde física. É também sobre se sentir bem consigo mesmo."],["callout","Story 2 - Contexto"],["quote","Estudos mostram que uma dieta equilibrada pode aumentar a confiança e melhorar a sua autoestima."],["callout","Story 3 - Contexto"],["quote","O segredo para conseguir explorar ao máximo os benefícios da alimentação nessa questão é encontrar um equilíbrio!"],["callout","Story 4 - Contexto"],["quote","E esse é um dos pilares que eu mais valorizo no meu atendimento. Sem extremismos, sem exageros, tudo altamente personalizado para a sua realidade."],["callout","Story 5 - CTA"],["quote","Clique no link e agende uma consulta comigo!"]]},{"category":"vendas","category_label":"Vendas","icon":"🗣️","title":"Opção 13 - Sobre o corpo perfeito","subcategory":"Através de Storytelling","blocks":[["callout","Story 1 - Gancho"],["quote","Muito se fala por aí em buscar o “corpo perfeito” ou o “shape dos sonhos” como se nutrição fosse resumida somente a emagrecimento."],["callout","Story 2 - Contexto"],["quote","Eu acho perigoso esse tipo de visão limitada, porque além de desconsiderar vários outros pontos fortes da área, ainda pode afastar muitas pessoas que não querem entrar no “shape”, mas se beneficiariam e muito de melhores hábitos alimentares"],["callout","Story 3 - Contexto"],["quote","Nutrição também ajuda:"],["bulleted_list","Na saúde mental;"],["bulleted_list","No controle de doenças;"],["bulleted_list","No ganho de massa;"],["bulleted_list","Na qualidade de vida;"],["callout","Story 4 - Virada"],["quote","E várias outras áreas que vão além de uma mera comparação com o que está “em alta” esteticamente falando"],["callout","Story 5 - CTA"],["quote","Nutrição é sobre emagrecimento, mas também é muito mais que isso!\nClique no link abaixo e saiba como o meu atendimento pode mudar sua vida!"],["quote","[Link para seu site/wpp comercial]"]]},{"category":"vendas","category_label":"Vendas","icon":"💝","title":"Opção 14 - Novos começos","subcategory":"Com prova social","blocks":[["callout","STORY 01 (Isca)"],["quote","Você está pronta para uma transformação?"],["callout","STORY 02 (Lançar a dúvida)"],["quote","“Como começar uma nova rotina alimentar?” Essa é uma dúvida comum? [Enquete] Sim | Sempre quis saber"],["callout","STORY 03 (Motivação)"],["quote","Eu sei que novos começos são difíceis, mas o primeiro passo tem que ser dado."],["callout","STORY 04 (Benefícios)"],["quote","Imagine como você se sentirá [sua transformação] ao alcançar [resultado obtido com a sua transformação]."],["callout","STORY 05 (Realidade)"],["quote","Mas você não precisa fazer isso sozinha. Eu [e + de x pacientes] estamos aqui para te guiar e servirmos de referência durante o seu processo"],["callout","STORY 06 (Transição para venda)"],["quote","Durante minha consulta, analisamos suas necessidades e objetivos, garantindo que você tenha todas as ferramentas para começar com o pé direito."],["callout","STORY 07 (Depoimento/Venda)"],["quote","[Colocar feedback] Quem já começou a jornada, já está colhendo os frutos! [Colocar link para o WhatsApp] Título do link: QUERO COMEÇAR [PROMESSA DE TRANSFORMAÇÃO DO SEU ATENDIMENTO]"]]},{"category":"vendas","category_label":"Vendas","icon":"💝","title":"Opção 15 - Hora da sinceridade","subcategory":"Com prova social","blocks":[["quote","A idéia aqui é gerar prova social específica para o seu produto/serviço, você precisa escolher os pontos que você quer que sejam os pontos-chave para se destacar da concorrência."],["callout","Ex1: Se você possui algum infoproduto, poste um Story com uma caixinha perguntando: Se você comprou o meu e-book, me fala o que achou do capítulo X?\nEx2: Se não possui infoproduto ou prefere o Feedback do atendimento: Se você já é minha paciente, me fala como tem se sentido no final do dia?"],["quote","Obs: Caso receba algum Feedback negativo, analise com cuidado antes de descartar, às vezes nessas mensagens você pode ter oportunidades de criar um diálogo ainda maior com a sua audiência."]]},{"category":"vendas","category_label":"Vendas","icon":"💝","title":"Opção 16 - Depoimentos enfáticos","subcategory":"Com prova social","blocks":[["callout","Separe alguns depoimentos dos seus pacientes e identifique palavras-chave que possam se conectar em uma única história, selecione palavras que possam soar negativamente, mas que no final surpreendam positivamente quem estiver lendo. Escreva um pequeno roteiro conectando cada depoimento e depois publique nos Stories em sequência com um pequeno print de cada depoimento."],["quote","[Veja o exemplo nas imagens anexadas]"]]},{"category":"vendas","category_label":"Vendas","icon":"🗣️","title":"Opção 14 - Dia de polêmica","subcategory":"Através de Storytelling","blocks":[["callout","Inicie a sequência com um “Hoje é dia de polêmica” e se posicione contra algo que seja comum dentro do seu nicho, porém você discorda."],["quote","(Ex: Utilizar Ozempic como uma solução prática para o emagrecimento, ou algumas trocas que você julga inúteis num processo de emagrecimento)."],["quote","Depois dedique de 3 a 4 stories para defender seu ponto. Ao final da sequência, você faz uma oferta para o seu atendimento e “prometendo” não incluir esse ponto que você se posicionou contra (Ex: Clique aqui e venha para um atendimento sem Ozempic)."]]},{"category":"vendas","category_label":"Vendas","icon":"🗣️","title":"Opção 15 - Prevenir é melhor do que remediar!","subcategory":"Através de Storytelling","blocks":[["callout","Story 1 - Gancho"],["quote","Você sabia que a alimentação pode prevenir doenças graves?\nEnquete: Já ouvi falar! | Não fazia ideia"],["callout","Story 2 - Contexto"],["quote","Pesquisas apontam que uma alimentação equilibrada somada com hábitos mais saudáveis reduz consideravelmente o risco de doenças crônicas como diabetes, hipertensão e doenças cardíacas."],["callout","OBS: Caso você com algum nicho específico de doenças crônicas, adapte esse trecho para uma pesquisa mais específica do seu segmento"],["callout","Story 3 - Contexto"],["quote","Um exemplo muito fácil de trazer aqui são com os casos de Hipertensão e diabetes, que com pequenos ajustes nas suas refeições, já proporciona um equilíbrio dessas condições sem precisar ser aquela \"Comida sem gosto”"],["callout","Story 4 - Contexto"],["quote","Muita gente acha que nutricionista só trabalha com \"emagrecimento”, mas essa é uma das diversas outras formas que um bom planejamento alimentar pode te ajudar a ter uma vida ainda melhor."],["callout","Story 5 - Virada"],["quote","Ficou curiosa(o) sobre como a nutrição pode te ajudar?"],["callout","Story 6 - CTA"],["quote","Agende uma consulta hoje mesmo!"]]},{"category":"vendas","category_label":"Vendas","icon":"🗣️","title":"Opção 16 - Não quero que você seja meu paciente!","subcategory":"Através de Storytelling","blocks":[["callout","A ideia dessa sequência é chocar com essa frase logo de cara, então comece com uma foto neutra ou um fundo escuro e coloque essa frase sozinha, sem nenhuma outra informação. Nos stories seguintes você escreverá:"],["bulleted_list","Quero você _____________ (adicione a mudança 1 que você promete com o seu atendimento);"],["bulleted_list","E que _____________ (adicione a mudança 2);"],["bulleted_list","E também _____________ (adicione a mudança 3);"],["text","E para isso tudo, eu não conheço solução melhor do que o meu atendimento."],["text","[Link para oferta]"],["callout","Obs: Caso tenha mais mudanças significativas, pode colocar, não tenha medo de aumentar a percepção de valor por trás do seu atendimento."]]},{"category":"vendas","category_label":"Vendas","icon":"🗣️","title":"Opção 17 - Sobre manter o foco","subcategory":"Através de Storytelling","blocks":[["callout","Story 1 - Gancho"],["quote","Estudos indicam o uso de listas para aquelas pessoas que não conseguem administrar suas demandas ao longo da sua rotina."],["callout","Story 2 - Contexto"],["quote","Você já tentou utilizar listas no seu dia a dia?\nEnquete: Já sim! | Nunca tentei"],["callout","Story 3 - Contexto"],["quote","Pra você que respondeu sim na enquete anterior, sentiu alguma mudança real?\nEnquete: Sim, uso sempre! | Não senti diferença"],["callout","Story 4 - Contexto"],["quote","O uso de listas na hora do seu planejamento alimentar também pode ser um forte aliado."],["text","Usar uma simples Lista de Compras vai te ajudar a focar no seu plano e evitar “cair na tentação” e colocar o que não precisa dentro do carrinho."],["callout","Story 5 - Virada"],["quote","Todos os meus pacientes recebem um modelo de Lista de Compras para preencher e usar na hora de comprar todos os alimentos que fazem parte do seu plano."],["callout","Story 6 - CTA"],["quote","Clique nesse link e saiba mais sobre o meu atendimento"],["text","[Link para seu site/wpp comercial]"]]}]</script>
+<script>
+const DATA = JSON.parse(document.getElementById('seqdata').textContent);
+
+const CAT_LABEL = {humanizacao:'Humanização', engajamento:'Engajamento', vendas:'Vendas'};
+const CAT_ORDER = ['humanizacao','engajamento','vendas'];
+
+const DAYS = [
+  {day:'Segunda', cat:'vendas', sub:'Através de Storytelling', note:'Abre a semana plantando a dúvida ou dor que sua consulta resolve.'},
+  {day:'Terça', cat:'engajamento', sub:'Caixinhas de Perguntas', note:'Gera conversa cedo na semana e já alimenta pauta pros próximos posts.'},
+  {day:'Quarta', cat:'humanizacao', sub:'Suas histórias', note:'Meio de semana: mostra quem tá por trás do atendimento.'},
+  {day:'Quinta', cat:'vendas', sub:'Com prova social', note:'Reforça a decisão de compra com resultado de paciente real.'},
+  {day:'Sexta', cat:'humanizacao', sub:'Suas histórias', search:'Desabafo de sexta', note:'A sequência "Desabafo de sexta" foi feita pra esse dia.'},
+  {day:'Sábado', cat:'engajamento', sub:'Outras Ferramentas', search:'Fim de semana', note:'Enquete leve sobre o fim de semana, sem cobrança de venda.'},
+  {day:'Domingo', cat:null, sub:null, note:'Sem pauta fixa. Espaço livre, repost de destaque ou descanso de conteúdo comercial.'},
+];
+
+let state = {cat:'todos', sub:null, query:''};
+let used = new Set();
+try { used = new Set(JSON.parse(localStorage.getItem('stories-usadas') || '[]')); } catch(e){}
+
+function saveUsed(){
+  try { localStorage.setItem('stories-usadas', JSON.stringify([...used])); } catch(e){}
+}
+
+function idFor(item){ return item.category + '|' + item.title; }
+
+function normalize(s){ return (s||'').toLowerCase(); }
+
+function subcatsFor(cat){
+  const set = new Set();
+  DATA.forEach(d => { if (cat==='todos' || d.category===cat) set.add(d.subcategory); });
+  return [...set];
+}
+
+function renderDayStrip(){
+  const el = document.getElementById('dayStrip');
+  el.innerHTML = DAYS.map(d => {
+    const isRest = !d.cat;
+    const catClass = d.cat ? 'cat-'+d.cat : '';
+    const catLabel = d.cat ? CAT_LABEL[d.cat] : 'Livre';
+    return `<button class="day-card ${isRest?'rest':''}" data-day='${d.day}'>
+      <span class="dname">${d.day}</span>
+      <span class="dcat ${catClass}"><span class="dot"></span>${catLabel}</span>
+      ${d.sub ? `<span class="dsub">${d.sub}</span>` : ''}
+      <span class="dnote">${d.note}</span>
+      ${d.cat ? `<span class="dgo">Ver sequências →</span>` : ''}
+    </button>`;
+  }).join('');
+  el.querySelectorAll('.day-card').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const conf = DAYS.find(d => d.day === btn.dataset.day);
+      if (!conf.cat) return;
+      state.cat = conf.cat;
+      state.sub = conf.sub || null;
+      state.query = conf.search || '';
+      document.getElementById('searchInput').value = state.query;
+      renderAll();
+      document.querySelector('.controls').scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+}
+
+function renderTabs(){
+  const counts = {todos: DATA.length};
+  CAT_ORDER.forEach(c => counts[c] = DATA.filter(d=>d.category===c).length);
+  const tabs = [{key:'todos', label:'Todas'}, ...CAT_ORDER.map(c=>({key:c,label:CAT_LABEL[c]}))];
+  const el = document.getElementById('tabs');
+  el.innerHTML = tabs.map(t => `<button class="tab ${state.cat===t.key?'active':''} ${t.key!=='todos'?'cat-'+t.key:''}" data-cat="${t.key}">${t.label} <span class="count">${counts[t.key]}</span></button>`).join('');
+  el.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => {
+    state.cat = b.dataset.cat; state.sub = null; renderAll();
+  }));
+}
+
+function renderChips(){
+  const el = document.getElementById('chips');
+  const subs = subcatsFor(state.cat);
+  el.innerHTML = subs.map(s => `<button class="chip ${state.sub===s?'active':''}" data-sub="${s}">${s}</button>`).join('');
+  el.querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => {
+    state.sub = (state.sub === b.dataset.sub) ? null : b.dataset.sub;
+    renderGrid();
+    renderChips();
+  }));
+}
+
+function isLabelLine(text){
+  if (text.length > 46) return false;
+  return /^story\s*\d+/i.test(text) || /:\s*$/.test(text);
+}
+
+function blockHtml(type, text){
+  const label = isLabelLine(text);
+  if (label) return `<div class="blk-label">${escapeHtml(text.replace(/:\s*$/,''))}</div>`;
+  if (type === 'bulleted_list') return {li:true, text};
+  if (type === 'quote') return `<div class="blk-quote">${escapeHtml(text)}</div>`;
+  if (type === 'callout') return `<div class="blk-callout">${escapeHtml(text)}</div>`;
+  return `<div class="blk-text">${escapeHtml(text)}</div>`;
+}
+
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderBlocks(blocks){
+  let html = '';
+  let liBuffer = [];
+  const flushLi = () => {
+    if (liBuffer.length){
+      html += `<ul class="blk-list">${liBuffer.map(t=>`<li>${escapeHtml(t)}</li>`).join('')}</ul>`;
+      liBuffer = [];
+    }
+  };
+  blocks.forEach(([type,text]) => {
+    const r = blockHtml(type, text);
+    if (r && r.li){ liBuffer.push(r.text); return; }
+    flushLi();
+    html += r;
+  });
+  flushLi();
+  return html;
+}
+
+function plainText(item){
+  let out = item.title + '\n\n';
+  item.blocks.forEach(([type,text]) => { out += text + '\n\n'; });
+  return out.trim();
+}
+
+function matchesQuery(item, q){
+  if (!q) return true;
+  const nq = normalize(q);
+  if (normalize(item.title).includes(nq)) return true;
+  return item.blocks.some(([t,text]) => normalize(text).includes(nq));
+}
+
+function filtered(){
+  return DATA.filter(d => {
+    if (state.cat !== 'todos' && d.category !== state.cat) return false;
+    if (state.sub && d.subcategory !== state.sub) return false;
+    if (!matchesQuery(d, state.query)) return false;
+    return true;
+  });
+}
+
+function renderGrid(){
+  const items = filtered();
+  const grid = document.getElementById('grid');
+  const empty = document.getElementById('emptyState');
+  empty.hidden = items.length !== 0;
+  grid.innerHTML = items.map(item => {
+    const id = idFor(item);
+    const isUsed = used.has(id);
+    const preview = (item.blocks[0] ? item.blocks[0][1] : '').slice(0,140);
+    const catClass = 'cat-'+item.category;
+    return `<article class="card" data-id="${id.replace(/"/g,'&quot;')}">
+      <div class="card-top">
+        <span class="card-icon">${item.icon}</span>
+        <span class="card-title">${escapeHtml(item.title.replace(/^Opção\s*\d*\s*-\s*/,'').replace(/^Opção\s*-\s*/,''))}</span>
+      </div>
+      <div class="card-meta">
+        <span class="subtag ${catClass}"><span class="dot"></span>${item.subcategory}</span>
+      </div>
+      <p class="card-preview">${escapeHtml(preview)}</p>
+      <div class="card-actions">
+        <button class="expand-btn" data-action="toggle">Ver roteiro completo ↓</button>
+        <label class="used-label"><input type="checkbox" data-action="used" ${isUsed?'checked':''}/> já usei</label>
+      </div>
+      <div class="card-body" hidden></div>
+    </article>`;
+  }).join('');
+
+  grid.querySelectorAll('.card').forEach(card => {
+    const id = card.dataset.id;
+    const item = items.find(it => idFor(it) === id);
+    const body = card.querySelector('.card-body');
+    const expandBtn = card.querySelector('[data-action="toggle"]');
+    expandBtn.addEventListener('click', () => {
+      const open = !body.hidden;
+      if (open){
+        body.hidden = true;
+        expandBtn.textContent = 'Ver roteiro completo ↓';
+      } else {
+        if (!body.dataset.filled){
+          body.innerHTML = renderBlocks(item.blocks) + `<button class="copy-btn" data-action="copy">Copiar roteiro</button>`;
+          body.dataset.filled = '1';
+          body.querySelector('[data-action="copy"]').addEventListener('click', (e) => {
+            navigator.clipboard.writeText(plainText(item)).then(() => {
+              e.target.textContent = 'Copiado ✓';
+              e.target.classList.add('copied');
+              setTimeout(() => { e.target.textContent = 'Copiar roteiro'; e.target.classList.remove('copied'); }, 1600);
+            }).catch(()=>{});
+          });
+        }
+        body.hidden = false;
+        expandBtn.textContent = 'Recolher ↑';
+      }
+    });
+    card.querySelector('[data-action="used"]').addEventListener('change', (e) => {
+      if (e.target.checked) used.add(id); else used.delete(id);
+      saveUsed();
+    });
+  });
+}
+
+function renderAll(){
+  renderTabs();
+  renderChips();
+  renderGrid();
+}
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  state.query = e.target.value;
+  renderGrid();
+});
+
+document.getElementById('statSub').textContent = new Set(DATA.map(d=>d.subcategory)).size;
+document.getElementById('statTotal').textContent = DATA.length;
+
+renderDayStrip();
+renderAll();
+</script>
+</body>
+</html>
