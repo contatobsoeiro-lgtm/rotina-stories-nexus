@@ -67,6 +67,12 @@
   .panel{display:flex;flex-direction:column;gap:14px;}
   .panel[hidden]{display:none;}
   .login-foot{font-size:12px;color:var(--ink-faint);text-align:center;margin-top:2px;}
+  .link-btn{
+    font-family:'Red Hat Display',sans-serif;font-size:12px;font-weight:600;
+    color:var(--ink-soft);background:none;border:none;cursor:pointer;padding:0;
+    text-decoration:underline;
+  }
+  .link-btn:hover{color:var(--ink);}
 </style>
 </head>
 <body>
@@ -90,17 +96,33 @@
       <input id="loginEmail" type="email" autocomplete="username" required>
     </div>
     <div class="field">
-      <label for="loginPassword">Senha</label>
+      <div class="field-row">
+        <label for="loginPassword">Senha</label>
+        <button type="button" class="link-btn" id="forgotLink">Esqueci minha senha</button>
+      </div>
       <input id="loginPassword" type="password" autocomplete="current-password" required>
     </div>
     <button class="submit-btn" id="loginBtn" type="submit">Entrar</button>
+  </form>
+
+  <!-- ESQUECI A SENHA -->
+  <form class="panel" id="forgotPanel" hidden novalidate>
+    <p style="font-size:13px;color:var(--ink-soft);margin:0;">Digita o e-mail da sua conta que a gente manda um link pra você criar uma senha nova.</p>
+    <div class="msg error" id="forgotError" role="alert"></div>
+    <div class="msg success" id="forgotSuccess" role="status"></div>
+    <div class="field">
+      <label for="forgotEmail">E-mail</label>
+      <input id="forgotEmail" type="email" autocomplete="username" required>
+    </div>
+    <button class="submit-btn" id="forgotBtn" type="submit">Enviar link de redefinição</button>
+    <button type="button" class="link-btn" id="backToLogin" style="align-self:center;">Voltar pro login</button>
   </form>
 
   <!-- PRIMEIRO ACESSO -->
   <form class="panel" id="signupPanel" hidden novalidate>
     <div class="info-box">
       <span class="ico">👋</span>
-      <span>Primeira vez aqui? Cria sua conta abaixo. Depois de cadastrar, a Nexus precisa <b>aprovar seu acesso</b> antes de você conseguir ver o conteúdo — pode levar um tempinho, mas você não precisa fazer mais nada além de esperar.</span>
+      <span>Primeira vez aqui? Cria sua conta abaixo. Depois de cadastrar, a Nexus precisa <b>aprovar seu acesso</b> antes de você conseguir ver o conteúdo. Pode levar um tempinho, mas você não precisa fazer mais nada além de esperar.</span>
     </div>
     <div class="msg error" id="signupError" role="alert"></div>
     <div class="msg success" id="signupSuccess" role="status"></div>
@@ -134,7 +156,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-  onAuthStateChanged, signOut, updateProfile
+  onAuthStateChanged, signOut, updateProfile, sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   getFirestore, doc, setDoc, getDoc, serverTimestamp
@@ -168,23 +190,73 @@ if (reason === 'revoked') showTopMsg('Esse acesso foi desativado. Fala com a Nex
 if (reason === 'unknown') showTopMsg('Não encontramos seu cadastro. Usa a aba "Primeiro acesso" pra se cadastrar.', 'warn');
 
 // --- Tabs ---
+const accessTabs = document.querySelector('.access-tabs');
 const tabLogin = document.getElementById('tabLogin');
 const tabSignup = document.getElementById('tabSignup');
 const loginPanel = document.getElementById('loginPanel');
 const signupPanel = document.getElementById('signupPanel');
+const forgotPanel = document.getElementById('forgotPanel');
 
 function setTab(which){
   const isLogin = which === 'login';
+  accessTabs.hidden = false;
   tabLogin.classList.toggle('active', isLogin);
   tabSignup.classList.toggle('active', !isLogin);
   tabLogin.setAttribute('aria-selected', String(isLogin));
   tabSignup.setAttribute('aria-selected', String(!isLogin));
   loginPanel.hidden = !isLogin;
   signupPanel.hidden = isLogin;
+  forgotPanel.hidden = true;
 }
 tabLogin.addEventListener('click', () => setTab('login'));
 tabSignup.addEventListener('click', () => setTab('signup'));
 if (reason === 'pending' || reason === 'revoked') setTab('login');
+
+// --- Esqueci minha senha ---
+const forgotLink = document.getElementById('forgotLink');
+const backToLogin = document.getElementById('backToLogin');
+const forgotForm = document.getElementById('forgotPanel');
+const forgotError = document.getElementById('forgotError');
+const forgotSuccess = document.getElementById('forgotSuccess');
+const forgotBtn = document.getElementById('forgotBtn');
+
+forgotLink.addEventListener('click', () => {
+  accessTabs.hidden = true;
+  loginPanel.hidden = true;
+  signupPanel.hidden = true;
+  forgotPanel.hidden = false;
+  document.getElementById('forgotEmail').value = document.getElementById('loginEmail').value;
+});
+backToLogin.addEventListener('click', () => setTab('login'));
+
+forgotForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  forgotError.classList.remove('show');
+  forgotSuccess.classList.remove('show');
+  forgotBtn.disabled = true;
+  forgotBtn.textContent = 'Enviando…';
+
+  const email = document.getElementById('forgotEmail').value.trim();
+  const genericSuccess = 'Prontinho! Se esse e-mail tiver uma conta, o link pra criar uma senha nova já foi enviado.';
+  try {
+    await sendPasswordResetEmail(auth, email, { url: location.origin + location.pathname });
+    forgotSuccess.textContent = genericSuccess;
+    forgotSuccess.classList.add('show');
+    forgotForm.reset();
+  } catch (err) {
+    if (err.code === 'auth/user-not-found') {
+      // não revela se o e-mail existe ou não
+      forgotSuccess.textContent = genericSuccess;
+      forgotSuccess.classList.add('show');
+      forgotForm.reset();
+    } else {
+      forgotError.textContent = ERROR_MESSAGES[err.code] || 'Não deu pra enviar. Confere o e-mail e tenta de novo.';
+      forgotError.classList.add('show');
+    }
+  }
+  forgotBtn.disabled = false;
+  forgotBtn.textContent = 'Enviar link de redefinição';
+});
 
 // --- Se já estiver logada e aprovada, pula direto ---
 onAuthStateChanged(auth, async (user) => {
@@ -283,7 +355,7 @@ signupForm.addEventListener('submit', async (e) => {
     await signOut(auth);
 
     signupForm.reset();
-    signupSuccess.textContent = 'Conta criada! Agora é só esperar a Nexus aprovar seu acesso — você recebe aviso quando puder entrar.';
+    signupSuccess.textContent = 'Conta criada! Agora é só esperar a Nexus aprovar seu acesso, você recebe aviso quando puder entrar.';
     signupSuccess.classList.add('show');
     signupBtn.textContent = 'Criar minha conta';
     signupBtn.disabled = false;
