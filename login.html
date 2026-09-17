@@ -13,67 +13,132 @@
 <style>
   body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
   .login-card{
-    width:100%;max-width:380px;
+    width:100%;max-width:420px;min-width:0;
     background:var(--surface);border:1px solid var(--border);border-radius:16px;
     box-shadow:var(--shadow);
-    padding:32px 28px;
-    display:flex;flex-direction:column;gap:18px;
+    padding:30px 28px;
+    display:flex;flex-direction:column;gap:16px;
+    box-sizing:border-box;
   }
-  .login-card .brand{display:flex;justify-content:center;margin-bottom:4px;}
+  .login-card .brand{display:flex;justify-content:center;margin-bottom:2px;}
   .login-card .brand img{height:24px;}
-  .login-card h1{font-size:20px;font-weight:800;margin:0;text-align:center;}
-  .login-card p.sub{font-size:13px;color:var(--ink-soft);margin:0;text-align:center;}
-  .field{display:flex;flex-direction:column;gap:6px;}
+  .login-card h1{font-size:19px;font-weight:800;margin:0;text-align:center;}
+
+  .access-tabs{display:flex;gap:6px;background:var(--surface-2);border-radius:10px;padding:4px;}
+  .access-tab{
+    flex:1;min-width:0;font-family:'Red Hat Display',sans-serif;font-weight:700;font-size:12.5px;
+    padding:9px 4px;border-radius:8px;border:none;background:none;color:var(--ink-soft);cursor:pointer;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .access-tab.active{background:var(--surface);color:var(--ink);box-shadow:var(--shadow);}
+
+  .info-box{
+    display:flex;gap:10px;align-items:flex-start;
+    background:var(--accent-soft);border:1px solid var(--border);border-radius:10px;
+    padding:12px 14px;font-size:12.5px;line-height:1.5;color:var(--ink);
+  }
+  .info-box .ico{font-size:16px;line-height:1.3;flex:none;}
+
+  .field{display:flex;flex-direction:column;gap:5px;}
+  .field-row{display:flex;justify-content:space-between;align-items:baseline;}
   .field label{font-size:12.5px;font-weight:600;color:var(--ink-soft);}
+  .field .hint{font-size:11px;color:var(--ink-faint);}
   .field input{
     font-family:'Red Hat Display',sans-serif;font-size:14px;color:var(--ink);
     border:1px solid var(--border);border-radius:10px;padding:11px 13px;
     background:var(--bg);
   }
   .field input:focus-visible{outline:2px solid var(--ink);outline-offset:1px;}
-  .login-btn{
+
+  .submit-btn{
     font-family:'Red Hat Display',sans-serif;font-weight:700;font-size:14.5px;
     background:var(--ink);color:var(--accent);
     border:none;border-radius:10px;padding:13px;cursor:pointer;
-    margin-top:4px;
+    margin-top:2px;
   }
-  .login-btn[disabled]{opacity:.6;cursor:default;}
-  .error-msg{
-    font-size:13px;color:#8A1F2B;background:#FBEAEA;border:1px solid #F0C6C6;
-    border-radius:8px;padding:10px 12px;display:none;
-  }
-  .error-msg.show{display:block;}
+  .submit-btn[disabled]{opacity:.6;cursor:default;}
+
+  .msg{font-size:13px;border-radius:8px;padding:10px 12px;display:none;}
+  .msg.show{display:block;}
+  .msg.error{color:#8A1F2B;background:#FBEAEA;border:1px solid #F0C6C6;}
+  .msg.success{color:#1F5C3A;background:#E7F5EC;border:1px solid #BFE3CD;}
+  .msg.warn{color:#7A5A12;background:#FDF3DC;border:1px solid #F0DBA0;}
+
+  .panel{display:flex;flex-direction:column;gap:14px;}
+  .panel[hidden]{display:none;}
   .login-foot{font-size:12px;color:var(--ink-faint);text-align:center;margin-top:2px;}
 </style>
 </head>
 <body>
-<form class="login-card" id="loginForm" novalidate>
+<div class="login-card">
   <div class="brand"><img src="assets/nexus-logo.png" alt="Nexus Digital"></div>
-  <div>
-    <h1>Área de Membros</h1>
-    <p class="sub">Entre com o e-mail e senha que a Nexus cadastrou pra você.</p>
+  <h1>Área de Membros</h1>
+
+  <div class="msg" id="topMsg" role="alert"></div>
+
+  <div class="access-tabs" role="tablist">
+    <button class="access-tab active" id="tabLogin" role="tab" aria-selected="true">Entrar</button>
+    <button class="access-tab" id="tabSignup" role="tab" aria-selected="false">Primeiro acesso</button>
   </div>
 
-  <div class="error-msg" id="errorMsg" role="alert"></div>
+  <!-- ENTRAR -->
+  <form class="panel" id="loginPanel" novalidate>
+    <p style="font-size:13px;color:var(--ink-soft);margin:0;">Já tem conta aprovada pela Nexus? Entra com seu e-mail e senha.</p>
+    <div class="msg error" id="loginError" role="alert"></div>
+    <div class="field">
+      <label for="loginEmail">E-mail</label>
+      <input id="loginEmail" type="email" autocomplete="username" required>
+    </div>
+    <div class="field">
+      <label for="loginPassword">Senha</label>
+      <input id="loginPassword" type="password" autocomplete="current-password" required>
+    </div>
+    <button class="submit-btn" id="loginBtn" type="submit">Entrar</button>
+  </form>
 
-  <div class="field">
-    <label for="email">E-mail</label>
-    <input id="email" name="email" type="email" autocomplete="username" required>
-  </div>
-  <div class="field">
-    <label for="password">Senha</label>
-    <input id="password" name="password" type="password" autocomplete="current-password" required>
-  </div>
+  <!-- PRIMEIRO ACESSO -->
+  <form class="panel" id="signupPanel" hidden novalidate>
+    <div class="info-box">
+      <span class="ico">👋</span>
+      <span>Primeira vez aqui? Cria sua conta abaixo. Depois de cadastrar, a Nexus precisa <b>aprovar seu acesso</b> antes de você conseguir ver o conteúdo — pode levar um tempinho, mas você não precisa fazer mais nada além de esperar.</span>
+    </div>
+    <div class="msg error" id="signupError" role="alert"></div>
+    <div class="msg success" id="signupSuccess" role="status"></div>
 
-  <button class="login-btn" id="loginBtn" type="submit">Entrar</button>
-  <p class="login-foot">Esqueceu a senha ou não tem acesso ainda? Fala com a Nexus.</p>
-</form>
+    <div class="field">
+      <label for="signupName">Seu nome</label>
+      <input id="signupName" type="text" autocomplete="name" required>
+    </div>
+    <div class="field">
+      <div class="field-row"><label for="signupEmail">E-mail</label></div>
+      <input id="signupEmail" type="email" autocomplete="username" required>
+    </div>
+    <div class="field">
+      <div class="field-row">
+        <label for="signupPassword">Crie uma senha</label>
+        <span class="hint">mínimo 6 caracteres</span>
+      </div>
+      <input id="signupPassword" type="password" autocomplete="new-password" minlength="6" required>
+    </div>
+    <div class="field">
+      <label for="signupPassword2">Confirme a senha</label>
+      <input id="signupPassword2" type="password" autocomplete="new-password" minlength="6" required>
+    </div>
+    <button class="submit-btn" id="signupBtn" type="submit">Criar minha conta</button>
+  </form>
+
+  <p class="login-foot">Dúvida ou problema com o acesso? Fala com a Nexus.</p>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getAuth, signInWithEmailAndPassword, onAuthStateChanged
+  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  onAuthStateChanged, signOut, updateProfile
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore, doc, setDoc, getDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBhlUoiffq5xpbfT5ghxfASJCdry6fllSE",
@@ -83,15 +148,52 @@ const firebaseConfig = {
   messagingSenderId: "641030538028",
   appId: "1:641030538028:web:4e673e9e5925a27f80a289",
 };
+const ADMIN_EMAIL = "contato.bsoeiro@gmail.com";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 const params = new URLSearchParams(location.search);
-const redirectTo = params.get('next') || 'index.html';
+const redirectTo = params.get('next') || 'home.html';
+const reason = params.get('reason');
 
-onAuthStateChanged(auth, (user) => {
-  if (user) location.href = redirectTo;
+const topMsg = document.getElementById('topMsg');
+function showTopMsg(text, kind){
+  topMsg.textContent = text;
+  topMsg.className = `msg show ${kind}`;
+}
+if (reason === 'pending') showTopMsg('Sua conta já foi criada, mas ainda está aguardando aprovação da Nexus.', 'warn');
+if (reason === 'revoked') showTopMsg('Esse acesso foi desativado. Fala com a Nexus se achar que é engano.', 'error');
+if (reason === 'unknown') showTopMsg('Não encontramos seu cadastro. Usa a aba "Primeiro acesso" pra se cadastrar.', 'warn');
+
+// --- Tabs ---
+const tabLogin = document.getElementById('tabLogin');
+const tabSignup = document.getElementById('tabSignup');
+const loginPanel = document.getElementById('loginPanel');
+const signupPanel = document.getElementById('signupPanel');
+
+function setTab(which){
+  const isLogin = which === 'login';
+  tabLogin.classList.toggle('active', isLogin);
+  tabSignup.classList.toggle('active', !isLogin);
+  tabLogin.setAttribute('aria-selected', String(isLogin));
+  tabSignup.setAttribute('aria-selected', String(!isLogin));
+  loginPanel.hidden = !isLogin;
+  signupPanel.hidden = isLogin;
+}
+tabLogin.addEventListener('click', () => setTab('login'));
+tabSignup.addEventListener('click', () => setTab('signup'));
+if (reason === 'pending' || reason === 'revoked') setTab('login');
+
+// --- Se já estiver logada e aprovada, pula direto ---
+onAuthStateChanged(auth, async (user) => {
+  if (!user) return;
+  if (user.email === ADMIN_EMAIL) { location.href = redirectTo; return; }
+  const snap = await getDoc(doc(db, 'users', user.uid));
+  if (snap.exists() && snap.data().status === 'approved') {
+    location.href = redirectTo;
+  }
 });
 
 const ERROR_MESSAGES = {
@@ -102,28 +204,94 @@ const ERROR_MESSAGES = {
   'auth/invalid-credential': 'E-mail ou senha incorretos.',
   'auth/too-many-requests': 'Muitas tentativas. Espera um pouco e tenta de novo.',
   'auth/network-request-failed': 'Sem conexão. Confere sua internet.',
+  'auth/email-already-in-use': 'Já existe uma conta com esse e-mail. Tenta entrar na aba "Entrar".',
+  'auth/weak-password': 'Senha muito fraca, usa pelo menos 6 caracteres.',
 };
 
-const form = document.getElementById('loginForm');
-const errorMsg = document.getElementById('errorMsg');
+// --- Login ---
+const loginForm = document.getElementById('loginPanel');
+const loginError = document.getElementById('loginError');
 const loginBtn = document.getElementById('loginBtn');
 
-form.addEventListener('submit', async (e) => {
+loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  errorMsg.classList.remove('show');
+  loginError.classList.remove('show');
   loginBtn.disabled = true;
   loginBtn.textContent = 'Entrando…';
 
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
 
   try {
-    await signInWithEmailAndPassword(auth, email, password);
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    if (cred.user.email !== ADMIN_EMAIL) {
+      const snap = await getDoc(doc(db, 'users', cred.user.uid));
+      const status = snap.exists() ? snap.data().status : null;
+      if (status !== 'approved') {
+        await signOut(auth);
+        loginError.textContent = status === 'pending'
+          ? 'Sua conta ainda está aguardando aprovação da Nexus.'
+          : status === 'revoked'
+            ? 'Esse acesso foi desativado. Fala com a Nexus.'
+            : 'Não encontramos seu cadastro. Usa a aba "Primeiro acesso".';
+        loginError.classList.add('show');
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Entrar';
+        return;
+      }
+    }
+    location.href = redirectTo;
   } catch (err) {
-    errorMsg.textContent = ERROR_MESSAGES[err.code] || 'Não deu pra entrar. Tenta de novo.';
-    errorMsg.classList.add('show');
+    loginError.textContent = ERROR_MESSAGES[err.code] || 'Não deu pra entrar. Tenta de novo.';
+    loginError.classList.add('show');
     loginBtn.disabled = false;
     loginBtn.textContent = 'Entrar';
+  }
+});
+
+// --- Primeiro acesso (signup) ---
+const signupForm = document.getElementById('signupPanel');
+const signupError = document.getElementById('signupError');
+const signupSuccess = document.getElementById('signupSuccess');
+const signupBtn = document.getElementById('signupBtn');
+
+signupForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  signupError.classList.remove('show');
+  signupSuccess.classList.remove('show');
+
+  const name = document.getElementById('signupName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const password = document.getElementById('signupPassword').value;
+  const password2 = document.getElementById('signupPassword2').value;
+
+  if (password !== password2) {
+    signupError.textContent = 'As senhas digitadas são diferentes.';
+    signupError.classList.add('show');
+    return;
+  }
+
+  signupBtn.disabled = true;
+  signupBtn.textContent = 'Criando…';
+
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(cred.user, { displayName: name });
+    await setDoc(doc(db, 'users', cred.user.uid), {
+      name, email, status: 'pending', createdAt: serverTimestamp(),
+    });
+    await signOut(auth);
+
+    signupForm.reset();
+    signupSuccess.textContent = 'Conta criada! Agora é só esperar a Nexus aprovar seu acesso — você recebe aviso quando puder entrar.';
+    signupSuccess.classList.add('show');
+    signupBtn.textContent = 'Criar minha conta';
+    signupBtn.disabled = false;
+  } catch (err) {
+    signupError.textContent = ERROR_MESSAGES[err.code] || 'Não deu pra criar a conta. Tenta de novo.';
+    signupError.classList.add('show');
+    signupBtn.disabled = false;
+    signupBtn.textContent = 'Criar minha conta';
   }
 });
 </script>

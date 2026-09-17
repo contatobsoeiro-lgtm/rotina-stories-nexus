@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Início</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .greeting{padding:36px 0 8px;}
+  .greeting h1{font-size:clamp(24px,3vw,32px);font-weight:800;margin:0 0 6px;}
+  .greeting p{font-size:14.5px;color:var(--ink-soft);margin:0;}
+
+  .module-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+    gap:14px;padding:24px 0 60px;
+  }
+  .module-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:22px;display:flex;flex-direction:column;gap:10px;
+    text-decoration:none;color:var(--ink);box-shadow:var(--shadow);
+    transition:transform .12s ease;
+  }
+  a.module-card:hover{transform:translateY(-2px);}
+  .module-card .mc-icon{font-size:26px;line-height:1;}
+  .module-card h3{font-size:17px;font-weight:800;margin:0;}
+  .module-card p{font-size:13px;color:var(--ink-soft);margin:0;line-height:1.45;flex:1;}
+  .module-card .mc-go{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;
+    color:var(--ink);
+  }
+  .module-card.disabled{opacity:.55;cursor:default;}
+  .module-card.disabled .mc-go{color:var(--ink-faint);}
+  @media (max-width:560px){.module-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="topbar-left">
+      <div class="brand"><img src="assets/nexus-logo.png" alt="Nexus Digital"></div>
+      <span class="area-label">Área de Membros</span>
+    </div>
+    <nav class="module-nav" aria-label="Módulos da área de membros">
+      <span class="module-link active" aria-current="page">Início</span>
+      <a class="module-link" href="index.html">Stories</a>
+      <a class="module-link" href="prompts.html">Prompts</a>
+      <span class="module-link disabled">Calendário<span class="soon">em breve</span></span>
+      <span class="module-link disabled">Script de Vendas<span class="soon">em breve</span></span>
+      <span class="module-link disabled">Linha Editorial<span class="soon">em breve</span></span>
+    </nav>
+    <button class="logout-btn" data-action="logout" title="Sair">Sair</button>
+  </div>
+</header>
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-inner">
+    <div class="loading-logo"><img src="assets/nexus-logo.png" alt=""></div>
+    <p>Carregando…</p>
+  </div>
+</div>
+
+<main id="mainContent" hidden>
+  <div class="wrap greeting">
+    <h1 id="greetingText">Olá!</h1>
+    <p>Esses são os módulos disponíveis pra você agora.</p>
+  </div>
+
+  <div class="wrap">
+    <div class="module-grid">
+      <a class="module-card" href="index.html">
+        <span class="mc-icon">📱</span>
+        <h3>Stories</h3>
+        <p>106 roteiros prontos de Stories em Humanização, Engajamento e Vendas, mais a rotina semanal da Nexus.</p>
+        <span class="mc-go">Abrir →</span>
+      </a>
+      <a class="module-card" href="prompts.html">
+        <span class="mc-icon">🧠</span>
+        <h3>Prompts de Conteúdo</h3>
+        <p>A IA como sua social media estrategista: contexto fixo, entrevista e 15 prompts por situação.</p>
+        <span class="mc-go">Abrir →</span>
+      </a>
+      <div class="module-card disabled">
+        <span class="mc-icon">🗓️</span>
+        <h3>Calendário</h3>
+        <p>Calendário editorial mensal, integrado com a sua rotina de Stories.</p>
+        <span class="mc-go">Em breve</span>
+      </div>
+      <div class="module-card disabled">
+        <span class="mc-icon">💬</span>
+        <h3>Script de Vendas</h3>
+        <p>Roteiro completo de atendimento e fechamento pelo WhatsApp.</p>
+        <span class="mc-go">Em breve</span>
+      </div>
+      <div class="module-card disabled">
+        <span class="mc-icon">📋</span>
+        <h3>Linha Editorial</h3>
+        <p>O mapa de temas e formatos que sustenta o seu conteúdo mês a mês.</p>
+        <span class="mc-go">Em breve</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+import { requireAuth, wireLogout } from './assets/auth-guard.js';
+
+(async () => {
+  const user = await requireAuth();
+  wireLogout(user);
+
+  const name = (user.displayName || user.email || '').split(' ')[0].split('@')[0];
+  document.getElementById('greetingText').textContent = name ? `Olá, ${name}!` : 'Olá!';
+
+  document.getElementById('loadingScreen').hidden = true;
+  document.getElementById('mainContent').hidden = false;
+})();
+</script>
+</body>
+</html>
