@@ -75,8 +75,8 @@ export function renderTodayCard(el, modelo, onFilter){
       <h3>Fim de semana, sem modelo oficial</h3>
       <p class="note">Os 3 modelos da Nexus Digital cobrem só de segunda a sexta. Se quiser postar mesmo assim, o banco tem dois clássicos pensados pro fim de semana:</p>
       <div class="today-pills">
-        <button class="today-pill" data-title="Desabafo de sexta">🍿 Desabafo de sexta</button>
-        <button class="today-pill" data-title="Fim de semana">❓ Fim de semana</button>
+        <button class="today-pill" data-title="Desabafo de sexta">💚 Desabafo de sexta</button>
+        <button class="today-pill" data-title="Fim de semana">👥 Fim de semana</button>
       </div>
     `;
     el.querySelectorAll('.today-pill').forEach(btn => {

@@ -15,6 +15,16 @@
 <link rel="stylesheet" href="assets/style.css">
 <style>
   .greeting{padding:36px 0 8px;}
+  .module-tag{
+    display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;
+    letter-spacing:.04em;background:var(--surface-2);color:var(--ink-soft);
+    border-radius:999px;padding:4px 11px;margin-bottom:8px;
+  }
+  .section-link{
+    display:inline-block;margin-top:14px;
+    font-family:'Red Hat Display',sans-serif;font-size:13px;font-weight:700;
+    color:var(--ink);text-decoration:underline;
+  }
   .greeting h1{font-size:clamp(24px,3vw,32px);font-weight:800;margin:0 0 6px;}
   .greeting p{font-size:14.5px;color:var(--ink-soft);margin:0;}
 
@@ -71,15 +81,17 @@
 <main id="mainContent" hidden>
   <div class="wrap greeting">
     <h1 id="greetingText">Olá!</h1>
-    <p>Sua área de trabalho: o que fazer hoje, e os módulos disponíveis.</p>
+    <p>Essa é a sua área de trabalho: aqui você acompanha o que precisa fazer hoje e acessa todos os módulos da Nexus, num só lugar.</p>
   </div>
 
   <div class="wrap">
     <div class="section-head">
+      <span class="module-tag">📱 Módulo Stories</span>
       <h2>Hoje</h2>
-      <p>O que postar agora, direto do modelo que você escolheu em Stories.</p>
+      <p>O que postar hoje nos seus Stories, direto do modelo que você escolheu.</p>
     </div>
     <section class="today-card" id="todayCard"></section>
+    <a class="section-link" href="index.html">Ver tudo em Stories →</a>
   </div>
 
   <div class="wrap" style="margin-top:36px;">

@@ -64,19 +64,22 @@
 
   <div class="pillar-cards">
     <div class="pillar-card cat-humanizacao">
-      <span class="pc-icon">💚</span>
+      <div class="pc-top"><span class="pc-icon">💚</span><span class="pc-count" id="pcCountHumanizacao"></span></div>
       <h3>Humanização</h3>
       <p>Te aproxima do paciente: bastidores, rotina, o lado pessoal por trás do atendimento.</p>
+      <ul class="pc-breakdown" id="pcBreakdownHumanizacao"></ul>
     </div>
     <div class="pillar-card cat-engajamento">
-      <span class="pc-icon">👥</span>
+      <div class="pc-top"><span class="pc-icon">👥</span><span class="pc-count" id="pcCountEngajamento"></span></div>
       <h3>Engajamento</h3>
       <p>Puxa conversa: caixinha, enquete, desafio. Cada resposta é um dado sobre sua audiência.</p>
+      <ul class="pc-breakdown" id="pcBreakdownEngajamento"></ul>
     </div>
     <div class="pillar-card cat-vendas">
-      <span class="pc-icon">💰</span>
+      <div class="pc-top"><span class="pc-icon">💰</span><span class="pc-count" id="pcCountVendas"></span></div>
       <h3>Vendas</h3>
       <p>Converte: prova social e histórias que terminam num convite claro pra consulta.</p>
+      <ul class="pc-breakdown" id="pcBreakdownVendas"></ul>
     </div>
   </div>
 
@@ -95,6 +98,8 @@
     </div>
   </div>
 </div>
+
+<div class="wrap"><div class="work-divider"><span>Mão na massa</span></div></div>
 
 <div class="wrap">
   <div class="section-head">
@@ -204,6 +209,22 @@ function subcatsFor(cat){
   const set = new Set();
   DATA.forEach(d => { if (cat==='todos' || d.category===cat) set.add(d.subcategory); });
   return [...set];
+}
+
+function renderPillarStats(){
+  CAT_ORDER.forEach(cat => {
+    const capName = cat[0].toUpperCase() + cat.slice(1);
+    const items = DATA.filter(d => d.category === cat);
+    const countEl = document.getElementById(`pcCount${capName}`);
+    if (countEl) countEl.textContent = `${items.length} sequências`;
+
+    const listEl = document.getElementById(`pcBreakdown${capName}`);
+    if (!listEl) return;
+    listEl.innerHTML = SUBCAT_ORDER[cat].map(sub => {
+      const n = items.filter(d => d.subcategory === sub).length;
+      return `<li><span>${sub}</span><b>${n}</b></li>`;
+    }).join('');
+  });
 }
 
 function renderModelTabs(){
@@ -454,6 +475,7 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
   DATA = await fetchStories();
   document.getElementById('statSub').textContent = new Set(DATA.map(d=>d.subcategory)).size;
   document.getElementById('statTotal').textContent = DATA.length;
+  renderPillarStats();
 
   renderModelTabs();
   renderWeekGrid();
