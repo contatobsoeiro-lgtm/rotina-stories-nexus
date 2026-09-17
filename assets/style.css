@@ -263,6 +263,10 @@ a{color:inherit;}
   background:rgba(24,24,24,.07);border-radius:10px;padding:11px 14px;
 }
 .today-card.rest .today-slot{background:rgba(255,255,255,.07);}
+.today-slot.done{opacity:.6;}
+.today-slot.done .ts-label{text-decoration:line-through;}
+.ts-check{display:flex;align-items:center;cursor:pointer;}
+.ts-check input{width:20px;height:20px;cursor:pointer;accent-color:var(--ink);}
 .ts-time{
   font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
   width:56px;flex:none;

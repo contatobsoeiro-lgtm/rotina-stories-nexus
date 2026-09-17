@@ -256,13 +256,20 @@ function renderToday(){
   }
 
   const entries = TURNOS
-    .map(([key,label]) => dayGrid[key] ? {time:label, meta:SLOTS[dayGrid[key]]} : null)
+    .map(([key,label]) => dayGrid[key] ? {turno:key, time:label, meta:SLOTS[dayGrid[key]]} : null)
     .filter(Boolean);
   const primary = entries.find(e => e.meta !== SLOTS.ritual) || entries[0];
   el.className = 'today-card cat-' + primary.meta.cat;
 
+  const todayISO = new Date().toISOString().slice(0,10);
+  const doneKey = (turno) => `feito-${todayISO}-${turno}`;
+  const isDone = (turno) => localStorage.getItem(doneKey(turno)) === '1';
+
   const slotsHtml = entries.map(e => `
-    <div class="today-slot">
+    <div class="today-slot ${isDone(e.turno) ? 'done' : ''}" data-turno="${e.turno}">
+      <label class="ts-check">
+        <input type="checkbox" data-action="mark-done" data-turno="${e.turno}" ${isDone(e.turno) ? 'checked' : ''}>
+      </label>
       <span class="ts-time">${e.time}</span>
       <span class="ts-label">${e.meta.label}${e.meta.hint ? ' · '+e.meta.hint : ''}</span>
       <button class="ts-btn" data-cat="${e.meta.cat}" data-sub="${e.meta.sub || ''}">Ver opções →</button>
@@ -276,6 +283,14 @@ function renderToday(){
   `;
   el.querySelectorAll('.ts-btn').forEach(btn => {
     btn.addEventListener('click', () => goToFilter(btn.dataset.cat, btn.dataset.sub || null, ''));
+  });
+  el.querySelectorAll('[data-action="mark-done"]').forEach(chk => {
+    chk.addEventListener('change', () => {
+      const turno = chk.dataset.turno;
+      if (chk.checked) localStorage.setItem(doneKey(turno), '1');
+      else localStorage.removeItem(doneKey(turno));
+      chk.closest('.today-slot').classList.toggle('done', chk.checked);
+    });
   });
 }
 
