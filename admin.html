@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Painel de Acessos</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .greeting{padding:36px 0 8px;}
+  .greeting h1{font-size:clamp(24px,3vw,32px);font-weight:800;margin:0 0 6px;}
+  .greeting p{font-size:14.5px;color:var(--ink-soft);margin:0;}
+
+  .denied{
+    max-width:420px;margin:80px auto;text-align:center;
+    display:flex;flex-direction:column;gap:10px;align-items:center;
+  }
+  .denied .ico{font-size:36px;}
+
+  .stat-row{display:flex;gap:24px;flex-wrap:wrap;padding:0 0 8px;}
+
+  .user-section{padding:20px 0;}
+  .user-section h2{font-size:16px;font-weight:800;margin:0 0 14px;display:flex;align-items:center;gap:8px;}
+  .user-section .count{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;
+    background:var(--surface-2);color:var(--ink-soft);border-radius:999px;padding:2px 9px;
+  }
+  .user-list{display:flex;flex-direction:column;gap:8px;}
+  .user-row{
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:14px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    box-shadow:var(--shadow);
+  }
+  .user-info{flex:1;min-width:180px;}
+  .user-info .name{font-size:14px;font-weight:700;color:var(--ink);}
+  .user-info .email{font-size:12.5px;color:var(--ink-soft);}
+  .user-info .date{font-size:11px;color:var(--ink-faint);font-family:'IBM Plex Mono',monospace;}
+  .user-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .u-btn{
+    font-family:'Red Hat Display',sans-serif;font-weight:700;font-size:12.5px;
+    padding:8px 14px;border-radius:8px;border:none;cursor:pointer;
+  }
+  .u-btn.approve{background:var(--ink);color:var(--accent);}
+  .u-btn.reject{background:var(--surface-2);color:var(--ink-soft);}
+  .u-btn.revoke{background:var(--surface-2);color:#8A1F2B;}
+  .u-btn[disabled]{opacity:.5;cursor:default;}
+  .empty-hint{font-size:13px;color:var(--ink-faint);padding:4px 2px;}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="topbar-left">
+      <div class="brand"><img src="assets/nexus-logo.png" alt="Nexus Digital"></div>
+      <span class="area-label">Área de Membros</span>
+    </div>
+    <nav class="module-nav" aria-label="Módulos da área de membros">
+      <a class="module-link" href="home.html">Início</a>
+      <a class="module-link" href="index.html">Stories</a>
+      <a class="module-link" href="prompts.html">Prompts</a>
+      <span class="module-link active" aria-current="page">Acessos</span>
+    </nav>
+    <button class="logout-btn" data-action="logout" title="Sair">Sair</button>
+  </div>
+</header>
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-inner">
+    <div class="loading-logo"><img src="assets/nexus-logo.png" alt=""></div>
+    <p>Carregando…</p>
+  </div>
+</div>
+
+<main id="mainContent" hidden>
+  <div class="wrap greeting">
+    <h1>Painel de acessos</h1>
+    <p>Aprova quem se cadastrou e revoga acesso de quem precisar.</p>
+    <div class="stat-row">
+      <div class="stat"><b id="statPending">0</b><span>Pendentes</span></div>
+      <div class="stat"><b id="statApproved">0</b><span>Aprovados</span></div>
+      <div class="stat"><b id="statRevoked">0</b><span>Revogados</span></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="user-section">
+      <h2>Pendentes de aprovação <span class="count" id="countPending">0</span></h2>
+      <div class="user-list" id="listPending"></div>
+    </div>
+    <div class="user-section">
+      <h2>Com acesso aprovado <span class="count" id="countApproved">0</span></h2>
+      <div class="user-list" id="listApproved"></div>
+    </div>
+    <div class="user-section">
+      <h2>Acesso revogado <span class="count" id="countRevoked">0</span></h2>
+      <div class="user-list" id="listRevoked"></div>
+    </div>
+  </div>
+</main>
+
+<div class="denied" id="deniedScreen" hidden>
+  <span class="ico">🚫</span>
+  <h1>Só a Nexus acessa essa página</h1>
+  <p>Esse painel é restrito à conta administradora.</p>
+</div>
+
+<script type="module">
+import { auth, db, ADMIN_EMAIL, wireLogout } from './assets/auth-guard.js';
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  collection, getDocs, doc, updateDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+function fmtDate(ts){
+  if (!ts || !ts.toDate) return '';
+  return ts.toDate().toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+function rowHtml(id, u, kind){
+  const btns = {
+    pending: `<button class="u-btn approve" data-action="approve" data-id="${id}">Aprovar</button>
+               <button class="u-btn reject" data-action="revoke" data-id="${id}">Recusar</button>`,
+    approved: `<button class="u-btn revoke" data-action="revoke" data-id="${id}">Revogar acesso</button>`,
+    revoked: `<button class="u-btn approve" data-action="approve" data-id="${id}">Reativar</button>`,
+  }[kind];
+  return `<div class="user-row" data-row="${id}">
+    <div class="user-info">
+      <div class="name">${u.name || '(sem nome)'}</div>
+      <div class="email">${u.email || ''}</div>
+      <div class="date">cadastrada em ${fmtDate(u.createdAt)}</div>
+    </div>
+    <div class="user-actions">${btns}</div>
+  </div>`;
+}
+
+async function loadUsers(){
+  const snap = await getDocs(collection(db, 'users'));
+  const groups = { pending: [], approved: [], revoked: [] };
+  snap.forEach((d) => {
+    const data = d.data();
+    const status = groups[data.status] ? data.status : 'pending';
+    groups[status].push([d.id, data]);
+  });
+
+  for (const kind of ['pending', 'approved', 'revoked']) {
+    const list = document.getElementById(`list${kind[0].toUpperCase()}${kind.slice(1)}`);
+    const count = document.getElementById(`count${kind[0].toUpperCase()}${kind.slice(1)}`);
+    const stat = document.getElementById(`stat${kind[0].toUpperCase()}${kind.slice(1)}`);
+    count.textContent = groups[kind].length;
+    stat.textContent = groups[kind].length;
+    list.innerHTML = groups[kind].length
+      ? groups[kind].map(([id, u]) => rowHtml(id, u, kind)).join('')
+      : `<p class="empty-hint">Ninguém aqui no momento.</p>`;
+  }
+
+  document.querySelectorAll('[data-action="approve"]').forEach((btn) => {
+    btn.addEventListener('click', () => setStatus(btn.dataset.id, 'approved', btn));
+  });
+  document.querySelectorAll('[data-action="revoke"]').forEach((btn) => {
+    btn.addEventListener('click', () => setStatus(btn.dataset.id, 'revoked', btn));
+  });
+}
+
+async function setStatus(uid, status, btn){
+  btn.disabled = true;
+  const original = btn.textContent;
+  btn.textContent = '…';
+  try {
+    await updateDoc(doc(db, 'users', uid), { status, updatedAt: serverTimestamp() });
+    await loadUsers();
+  } catch (e) {
+    btn.textContent = original;
+    btn.disabled = false;
+    alert('Não deu pra atualizar: ' + e.message);
+  }
+}
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user || user.email !== ADMIN_EMAIL) {
+    document.getElementById('loadingScreen').hidden = true;
+    document.getElementById('deniedScreen').hidden = false;
+    return;
+  }
+  wireLogout(user);
+  await loadUsers();
+  document.getElementById('loadingScreen').hidden = true;
+  document.getElementById('mainContent').hidden = false;
+});
+</script>
+</body>
+</html>

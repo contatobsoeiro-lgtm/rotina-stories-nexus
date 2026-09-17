@@ -63,4 +63,7 @@ export function wireLogout(user) {
       location.href = 'login.html';
     });
   });
+  if (isAdmin(user)) {
+    document.querySelectorAll('[data-admin-only]').forEach((el) => { el.hidden = false; });
+  }
 }
