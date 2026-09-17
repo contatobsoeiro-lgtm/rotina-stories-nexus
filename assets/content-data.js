@@ -5,10 +5,10 @@ export async function fetchStories() {
   const snap = await getDoc(doc(db, "content", "stories"));
   if (!snap.exists()) return [];
   const items = snap.data().items || [];
-  // Firestore guarda blocks como [{type,text}]; o resto do app espera [[type,text]].
+  // Firestore guarda blocks como [{type,text,formato?}]; o resto do app espera [[type,text,formato?]].
   return items.map((item) => ({
     ...item,
-    blocks: (item.blocks || []).map((b) => [b.type, b.text]),
+    blocks: (item.blocks || []).map((b) => b.formato ? [b.type, b.text, b.formato] : [b.type, b.text]),
   }));
 }
 

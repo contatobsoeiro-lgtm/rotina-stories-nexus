@@ -71,10 +71,22 @@
 <main id="mainContent" hidden>
   <div class="wrap greeting">
     <h1 id="greetingText">Olá!</h1>
-    <p>Esses são os módulos disponíveis pra você agora.</p>
+    <p>Sua área de trabalho: o que fazer hoje, e os módulos disponíveis.</p>
   </div>
 
   <div class="wrap">
+    <div class="section-head">
+      <h2>Hoje</h2>
+      <p>O que postar agora, direto do modelo que você escolheu em Stories.</p>
+    </div>
+    <section class="today-card" id="todayCard"></section>
+  </div>
+
+  <div class="wrap" style="margin-top:36px;">
+    <div class="section-head">
+      <h2>Seus módulos</h2>
+      <p>Tudo que está disponível pra você agora.</p>
+    </div>
     <div class="module-grid">
       <a class="module-card" href="index.html">
         <span class="mc-icon">📱</span>
@@ -112,6 +124,16 @@
 
 <script type="module">
 import { requireAuth, wireLogout } from './assets/auth-guard.js';
+import { getSavedModelo, renderTodayCard } from './assets/today-card.js';
+
+function goToStories(cat, sub, query){
+  const params = new URLSearchParams();
+  if (cat) params.set('cat', cat);
+  if (sub) params.set('sub', sub);
+  if (query) params.set('q', query);
+  const qs = params.toString();
+  location.href = 'index.html' + (qs ? `?${qs}` : '');
+}
 
 (async () => {
   const user = await requireAuth();
@@ -119,6 +141,8 @@ import { requireAuth, wireLogout } from './assets/auth-guard.js';
 
   const name = (user.displayName || user.email || '').split(' ')[0].split('@')[0];
   document.getElementById('greetingText').textContent = name ? `Olá, ${name}!` : 'Olá!';
+
+  renderTodayCard(document.getElementById('todayCard'), getSavedModelo(), goToStories);
 
   document.getElementById('loadingScreen').hidden = true;
   document.getElementById('mainContent').hidden = false;

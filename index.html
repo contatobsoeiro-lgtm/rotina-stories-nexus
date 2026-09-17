@@ -64,17 +64,17 @@
 
   <div class="pillar-cards">
     <div class="pillar-card cat-humanizacao">
-      <span class="pc-icon">🍿</span>
+      <span class="pc-icon">💚</span>
       <h3>Humanização</h3>
       <p>Te aproxima do paciente: bastidores, rotina, o lado pessoal por trás do atendimento.</p>
     </div>
     <div class="pillar-card cat-engajamento">
-      <span class="pc-icon">📫</span>
+      <span class="pc-icon">👥</span>
       <h3>Engajamento</h3>
       <p>Puxa conversa: caixinha, enquete, desafio. Cada resposta é um dado sobre sua audiência.</p>
     </div>
     <div class="pillar-card cat-vendas">
-      <span class="pc-icon">💝</span>
+      <span class="pc-icon">💰</span>
       <h3>Vendas</h3>
       <p>Converte: prova social e histórias que terminam num convite claro pra consulta.</p>
     </div>
@@ -157,6 +157,10 @@
 
 <script type="module">
 import { requireAuth, wireLogout } from './assets/auth-guard.js';
+import {
+  DIAS_SEMANA, TURNOS, SLOTS, MODELOS,
+  todayName, formatDatePt, getSavedModelo, saveModelo, renderTodayCard
+} from './assets/today-card.js';
 import { fetchStories } from './assets/content-data.js';
 
 let DATA = [];
@@ -170,60 +174,10 @@ const SUBCAT_ORDER = {
 };
 
 /* Modelos da Nexus Digital pra rotina de Stories: segunda a sexta, 3 turnos. */
-const DIAS_SEMANA = ['Segunda','Terça','Quarta','Quinta','Sexta'];
-const TURNOS = [['manha','Manhã'],['tarde','Tarde'],['noite','Noite']];
-
-const SLOTS = {
-  ritual:      {label:'Ritual', cat:'humanizacao', sub:'Rituais'},
-  engajamento: {label:'Engajamento', hint:'Caixinha, enquetes, desafios…', cat:'engajamento', sub:null},
-  prova_social:{label:'Prova social', cat:'vendas', sub:'Com prova social'},
-  oferta:      {label:'Oferta', cat:'vendas', sub:'Através de Storytelling'},
-  bastidores:  {label:'Bastidores', cat:'humanizacao', sub:'Bastidores'},
-  iniciando:   {label:'Iniciando os atendimentos', hint:'Bastidores de abertura do dia', cat:'humanizacao', sub:'Bastidores'},
-  encerrando:  {label:'Encerrando os atendimentos', hint:'Bastidores de fechamento do dia', cat:'humanizacao', sub:'Bastidores'},
-  vida_pessoal:{label:'Vida pessoal', cat:'humanizacao', sub:'Suas histórias'},
-};
-
-const MODELOS = {
-  1: {label:'Modelo 01', grid:{
-    Segunda:{manha:'ritual', tarde:'engajamento', noite:null},
-    Terça:  {manha:'ritual', tarde:'prova_social', noite:null},
-    Quarta: {manha:'ritual', tarde:'iniciando',    noite:'encerrando'},
-    Quinta: {manha:'ritual', tarde:'oferta',       noite:null},
-    Sexta:  {manha:'ritual', tarde:'bastidores',   noite:'vida_pessoal'},
-  }},
-  2: {label:'Modelo 02', grid:{
-    Segunda:{manha:'iniciando',    tarde:'ritual', noite:'encerrando'},
-    Terça:  {manha:'prova_social', tarde:'ritual', noite:null},
-    Quarta: {manha:'engajamento',  tarde:'ritual', noite:null},
-    Quinta: {manha:'oferta',       tarde:'ritual', noite:null},
-    Sexta:  {manha:'bastidores',   tarde:'ritual', noite:'vida_pessoal'},
-  }},
-  3: {label:'Modelo 03', grid:{
-    Segunda:{manha:'ritual', tarde:'prova_social', noite:null},
-    Terça:  {manha:'ritual', tarde:'iniciando',    noite:'encerrando'},
-    Quarta: {manha:'ritual', tarde:'oferta',       noite:null},
-    Quinta: {manha:'ritual', tarde:'engajamento',  noite:null},
-    Sexta:  {manha:'ritual', tarde:'bastidores',   noite:'vida_pessoal'},
-  }},
-};
-
-let state = {cat:'todos', sub:null, query:'', modelo:1};
-try {
-  const savedModelo = parseInt(localStorage.getItem('stories-modelo'), 10);
-  if ([1,2,3].includes(savedModelo)) state.modelo = savedModelo;
-} catch(e){}
+let state = {cat:'todos', sub:null, query:'', modelo:getSavedModelo()};
 
 let used = new Set();
 try { used = new Set(JSON.parse(localStorage.getItem('stories-usadas') || '[]')); } catch(e){}
-
-const WEEKDAY_MAP = {0:'Domingo',1:'Segunda',2:'Terça',3:'Quarta',4:'Quinta',5:'Sexta',6:'Sábado'};
-const MESES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
-
-function formatDatePt(){
-  const now = new Date();
-  return `${now.getDate()} de ${MESES[now.getMonth()]}`;
-}
 
 function goToFilter(cat, sub, query){
   state.cat = cat || 'todos';
@@ -234,67 +188,8 @@ function goToFilter(cat, sub, query){
   document.querySelector('.controls').scrollIntoView({behavior:'smooth', block:'start'});
 }
 
-function todayName(){ return WEEKDAY_MAP[new Date().getDay()]; }
-
 function renderToday(){
-  const el = document.getElementById('todayCard');
-  const name = todayName();
-  const dayGrid = MODELOS[state.modelo].grid[name];
-
-  if (!dayGrid){
-    el.className = 'today-card rest';
-    el.innerHTML = `
-      <span class="eyebrow">Hoje · ${name}-feira, ${formatDatePt()}</span>
-      <h3>Fim de semana, sem modelo oficial</h3>
-      <p class="note">Os 3 modelos da Nexus Digital cobrem só de segunda a sexta. Se quiser postar mesmo assim, o banco tem dois clássicos pensados pro fim de semana:</p>
-      <div class="today-pills">
-        <button class="today-pill" data-title="Desabafo de sexta">🍿 Desabafo de sexta</button>
-        <button class="today-pill" data-title="Fim de semana">❓ Fim de semana</button>
-      </div>
-    `;
-    el.querySelectorAll('.today-pill').forEach(btn => {
-      btn.addEventListener('click', () => goToFilter('todos', null, btn.dataset.title));
-    });
-    return;
-  }
-
-  const entries = TURNOS
-    .map(([key,label]) => dayGrid[key] ? {turno:key, time:label, meta:SLOTS[dayGrid[key]]} : null)
-    .filter(Boolean);
-  const primary = entries.find(e => e.meta !== SLOTS.ritual) || entries[0];
-  el.className = 'today-card cat-' + primary.meta.cat;
-
-  const todayISO = new Date().toISOString().slice(0,10);
-  const doneKey = (turno) => `feito-${todayISO}-${turno}`;
-  const isDone = (turno) => localStorage.getItem(doneKey(turno)) === '1';
-
-  const slotsHtml = entries.map(e => `
-    <div class="today-slot ${isDone(e.turno) ? 'done' : ''}" data-turno="${e.turno}">
-      <label class="ts-check">
-        <input type="checkbox" data-action="mark-done" data-turno="${e.turno}" ${isDone(e.turno) ? 'checked' : ''}>
-      </label>
-      <span class="ts-time">${e.time}</span>
-      <span class="ts-label">${e.meta.label}${e.meta.hint ? ' · '+e.meta.hint : ''}</span>
-      <button class="ts-btn" data-cat="${e.meta.cat}" data-sub="${e.meta.sub || ''}">Ver opções →</button>
-    </div>
-  `).join('');
-
-  el.innerHTML = `
-    <span class="eyebrow">Hoje · ${name}-feira, ${formatDatePt()} · ${MODELOS[state.modelo].label}</span>
-    <h3>${entries.map(e => e.meta.label).join(' · ')}</h3>
-    <div class="today-slots">${slotsHtml}</div>
-  `;
-  el.querySelectorAll('.ts-btn').forEach(btn => {
-    btn.addEventListener('click', () => goToFilter(btn.dataset.cat, btn.dataset.sub || null, ''));
-  });
-  el.querySelectorAll('[data-action="mark-done"]').forEach(chk => {
-    chk.addEventListener('change', () => {
-      const turno = chk.dataset.turno;
-      if (chk.checked) localStorage.setItem(doneKey(turno), '1');
-      else localStorage.removeItem(doneKey(turno));
-      chk.closest('.today-slot').classList.toggle('done', chk.checked);
-    });
-  });
+  renderTodayCard(document.getElementById('todayCard'), state.modelo, goToFilter);
 }
 
 function saveUsed(){
@@ -319,7 +214,7 @@ function renderModelTabs(){
   el.querySelectorAll('.model-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       state.modelo = Number(btn.dataset.modelo);
-      try { localStorage.setItem('stories-modelo', state.modelo); } catch(e){}
+      saveModelo(state.modelo);
       renderModelTabs();
       renderWeekGrid();
       renderToday();
@@ -393,9 +288,20 @@ function isLabelLine(text){
   return /^story\s*\d+/i.test(text) || /:\s*$/.test(text);
 }
 
-function blockHtml(type, text){
+const FORMAT_META = {
+  foto:         {icon:'📸', label:'Foto + texto'},
+  video_falado: {icon:'🎙️', label:'Vídeo falado'},
+  enquete:      {icon:'🗳️', label:'Enquete/Caixinha'},
+  video_texto:  {icon:'🎬', label:'Vídeo + texto'},
+};
+
+function blockHtml(type, text, formato){
   const label = isLabelLine(text);
-  if (label) return `<div class="blk-label">${escapeHtml(text.replace(/:\s*$/,''))}</div>`;
+  if (label){
+    const meta = FORMAT_META[formato];
+    const badge = meta ? `<span class="blk-format">${meta.icon} ${meta.label}</span>` : '';
+    return `<div class="blk-label"><span>${escapeHtml(text.replace(/:\s*$/,''))}</span>${badge}</div>`;
+  }
   if (type === 'bulleted_list') return {li:true, text};
   if (type === 'quote') return `<div class="blk-quote">${escapeHtml(text)}</div>`;
   if (type === 'callout') return `<div class="blk-callout">${escapeHtml(text)}</div>`;
@@ -415,8 +321,8 @@ function renderBlocks(blocks){
       liBuffer = [];
     }
   };
-  blocks.forEach(([type,text]) => {
-    const r = blockHtml(type, text);
+  blocks.forEach(([type,text,formato]) => {
+    const r = blockHtml(type, text, formato);
     if (r && r.li){ liBuffer.push(r.text); return; }
     flushLi();
     html += r;
@@ -427,6 +333,7 @@ function renderBlocks(blocks){
 
 function plainText(item){
   let out = item.title + '\n\n';
+  if (item.apoio_visual) out += `[Apoio visual: ${item.apoio_visual}]\n\n`;
   item.blocks.forEach(([type,text]) => { out += text + '\n\n'; });
   return out.trim();
 }
@@ -505,7 +412,10 @@ function renderGrid(){
         expandBtn.textContent = 'Ver roteiro completo ↓';
       } else {
         if (!body.dataset.filled){
-          body.innerHTML = renderBlocks(item.blocks) + `<button class="copy-btn" data-action="copy">Copiar roteiro</button>`;
+          const apoioHtml = item.apoio_visual
+            ? `<div class="blk-apoio"><span class="ico">🖼️</span><span>${escapeHtml(item.apoio_visual)}</span></div>`
+            : '';
+          body.innerHTML = apoioHtml + renderBlocks(item.blocks) + `<button class="copy-btn" data-action="copy">Copiar roteiro</button>`;
           body.dataset.filled = '1';
           body.querySelector('[data-action="copy"]').addEventListener('click', (e) => {
             navigator.clipboard.writeText(plainText(item)).then(() => {
@@ -548,10 +458,23 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
   renderModelTabs();
   renderWeekGrid();
   renderToday();
+
+  // Se veio de um link do Início (ou de outro lugar) com filtro na URL, aplica direto.
+  const urlParams = new URLSearchParams(location.search);
+  if (urlParams.has('cat') || urlParams.has('q')){
+    state.cat = urlParams.get('cat') || 'todos';
+    state.sub = urlParams.get('sub') || null;
+    state.query = urlParams.get('q') || '';
+    document.getElementById('searchInput').value = state.query;
+  }
   renderAll();
 
   document.getElementById('loadingScreen').hidden = true;
   document.getElementById('mainContent').hidden = false;
+
+  if (urlParams.has('cat') || urlParams.has('q')){
+    document.querySelector('.controls').scrollIntoView({behavior:'smooth', block:'start'});
+  }
 })();
 </script>
 </body>
